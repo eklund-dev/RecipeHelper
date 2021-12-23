@@ -12,6 +12,11 @@ namespace RecipeHelper.Persistance.Identity.Context
 
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
+
         public DbSet<RefreshToken>? RefreshTokens { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RecipeHelper.Application\RecipeHelper.Application.csproj" />
     <ProjectReference Include="..\RecipeHelper.Persistance.Identity\RecipeHelper.Persistance.Identity.csproj" />
+    <ProjectReference Include="..\RecipeHelper.Persistance\RecipeHelper.Persistance.Data.csproj" />
   </ItemGroup>
 
 </Project>

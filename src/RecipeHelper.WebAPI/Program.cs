@@ -20,6 +20,7 @@ builder.Services.InstallServicesInAssembly(builder.Configuration);
 
 DependencyContainer.RegisterServices(builder.Services, builder.Configuration);
 
+
 var app = await builder
     .Build()
     .MigrateRecipeHelperIdentityDatabase();

@@ -15,10 +15,11 @@ namespace RecipeHelper.Persistance.Identity.Containers
 
             services.AddDbContext<RecipeHelperIdentityDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("RecipeIdentityConnectionString"),
-                b => b.MigrationsAssembly(typeof(RecipeHelperIdentityDbContext).Assembly.FullName)));
+                b => b.MigrationsAssembly(typeof(RecipeHelperIdentityDbContext).Assembly.FullName)), ServiceLifetime.Transient);
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
-               .AddEntityFrameworkStores<RecipeHelperIdentityDbContext>().AddDefaultTokenProviders();
+               .AddEntityFrameworkStores<RecipeHelperIdentityDbContext>()
+               .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(opt =>
             {
@@ -31,7 +32,6 @@ namespace RecipeHelper.Persistance.Identity.Containers
                 opt.User.AllowedUserNameCharacters =
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+!";
             });
-
         }
     }
 }

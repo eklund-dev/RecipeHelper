@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RecipeHelper.Application.Common.Contracts;
 using RecipeHelper.Application.Common.Services;
+using RecipeHelper.Persistance.Data.Container;
 using RecipeHelper.Persistance.Identity.Containers;
 
 namespace RecipeHelper.Infrastructure.IoC.Container
@@ -19,6 +20,7 @@ namespace RecipeHelper.Infrastructure.IoC.Container
 
             services.AddJwtServices(configuration);
 
+            services.AddPersistanceServices(configuration);
         }
     }
 }
