@@ -1,35 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{344E406E-7FA4-4B73-9102-F0CDF63B0F10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.Domain", "src\RecipeHelper.Domain\RecipeHelper.Domain.csproj", "{6D83B031-90F6-4169-BF53-B6C0ACBD6237}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.Domain", "src\RecipeHelper.Domain\RecipeHelper.Domain.csproj", "{6D83B031-90F6-4169-BF53-B6C0ACBD6237}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.Application", "src\RecipeHelper.Application\RecipeHelper.Application.csproj", "{E6ECCF28-C8A7-4776-B82C-234BEC894A7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.Application", "src\RecipeHelper.Application\RecipeHelper.Application.csproj", "{E6ECCF28-C8A7-4776-B82C-234BEC894A7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.Common", "src\RecipeHelper.Common\RecipeHelper.Common.csproj", "{7A0AD330-8433-48E2-8EF6-8B7525B5CC44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.Common", "src\RecipeHelper.Common\RecipeHelper.Common.csproj", "{7A0AD330-8433-48E2-8EF6-8B7525B5CC44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.Infrastructure", "src\RecipeHelper.Infrastructure\RecipeHelper.Infrastructure.csproj", "{D0A419A1-8D9A-4EC5-A5FC-9C3DC9C6024A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.Infrastructure", "src\RecipeHelper.Infrastructure\RecipeHelper.Infrastructure.csproj", "{D0A419A1-8D9A-4EC5-A5FC-9C3DC9C6024A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.Persistance", "src\RecipeHelper.Persistance\RecipeHelper.Persistance.csproj", "{8DF10EDE-984E-4C27-A8A1-D7F130E14E68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.Persistance.Data", "src\RecipeHelper.Persistance\RecipeHelper.Persistance.Data.csproj", "{8DF10EDE-984E-4C27-A8A1-D7F130E14E68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.WebAPI", "src\RecipeHelper.WebAPI\RecipeHelper.WebAPI.csproj", "{C6B62260-79EE-482B-B8D4-BD9D53C5B1B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.WebAPI", "src\RecipeHelper.WebAPI\RecipeHelper.WebAPI.csproj", "{C6B62260-79EE-482B-B8D4-BD9D53C5B1B0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{25C7C892-6C0F-448A-80ED-30E98EC85CB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.UnitTests", "tests\RecipeHelper.UnitTests\RecipeHelper.UnitTests.csproj", "{BDD53E13-468A-45C3-ABDD-BAA8E58D336F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.UnitTests", "tests\RecipeHelper.UnitTests\RecipeHelper.UnitTests.csproj", "{BDD53E13-468A-45C3-ABDD-BAA8E58D336F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.IntegrationTests", "tests\RecipeHelper.IntegrationTests\RecipeHelper.IntegrationTests.csproj", "{06C6BA56-0760-4F3B-8EA7-27ECD46867B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.IntegrationTests", "tests\RecipeHelper.IntegrationTests\RecipeHelper.IntegrationTests.csproj", "{06C6BA56-0760-4F3B-8EA7-27ECD46867B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.Infrastructure.IoC", "src\RecipeHelper.Infrastructure.IoC\RecipeHelper.Infrastructure.IoC.csproj", "{CCECB718-CA34-493B-AF2F-8F222CA66530}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.Persistance.Identity", "src\RecipeHelper.Persistance.Identity\RecipeHelper.Persistance.Identity.csproj", "{B05DC793-7A4E-48E2-9F7A-6BE793E7DB8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6D83B031-90F6-4169-BF53-B6C0ACBD6237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -64,6 +65,17 @@ Global
 		{06C6BA56-0760-4F3B-8EA7-27ECD46867B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06C6BA56-0760-4F3B-8EA7-27ECD46867B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06C6BA56-0760-4F3B-8EA7-27ECD46867B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCECB718-CA34-493B-AF2F-8F222CA66530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCECB718-CA34-493B-AF2F-8F222CA66530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCECB718-CA34-493B-AF2F-8F222CA66530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCECB718-CA34-493B-AF2F-8F222CA66530}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B05DC793-7A4E-48E2-9F7A-6BE793E7DB8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B05DC793-7A4E-48E2-9F7A-6BE793E7DB8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B05DC793-7A4E-48E2-9F7A-6BE793E7DB8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B05DC793-7A4E-48E2-9F7A-6BE793E7DB8C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6D83B031-90F6-4169-BF53-B6C0ACBD6237} = {344E406E-7FA4-4B73-9102-F0CDF63B0F10}
@@ -74,5 +86,10 @@ Global
 		{C6B62260-79EE-482B-B8D4-BD9D53C5B1B0} = {344E406E-7FA4-4B73-9102-F0CDF63B0F10}
 		{BDD53E13-468A-45C3-ABDD-BAA8E58D336F} = {25C7C892-6C0F-448A-80ED-30E98EC85CB2}
 		{06C6BA56-0760-4F3B-8EA7-27ECD46867B1} = {25C7C892-6C0F-448A-80ED-30E98EC85CB2}
+		{CCECB718-CA34-493B-AF2F-8F222CA66530} = {344E406E-7FA4-4B73-9102-F0CDF63B0F10}
+		{B05DC793-7A4E-48E2-9F7A-6BE793E7DB8C} = {344E406E-7FA4-4B73-9102-F0CDF63B0F10}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1A5F205F-9DB6-48C2-82B2-360E6CF88075}
 	EndGlobalSection
 EndGlobal
