@@ -1,4 +1,5 @@
 using RecipeHelper.Infrastructure.IoC.Container;
+using RecipeHelper.Persistance.Identity;
 using RecipeHelper.WebAPI.Installers;
 using Serilog;
 
@@ -16,9 +17,12 @@ builder.Configuration.AddJsonFile($"appsettings.{Environment.MachineName}.json",
 builder.Services.InstallServicesInAssembly(builder.Configuration);
 
 // This IoC container registeres all services in the application. Only one project reference needed.
-DependencyContainer.RegisterServices(builder.Services);
 
-var app = builder.Build();
+DependencyContainer.RegisterServices(builder.Services, builder.Configuration);
+
+var app = await builder
+    .Build()
+    .MigrateRecipeHelperIdentityDatabase();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -39,4 +43,4 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-app.Run();
+await app.RunAsync();
