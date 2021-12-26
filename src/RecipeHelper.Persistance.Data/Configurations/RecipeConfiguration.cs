@@ -15,10 +15,12 @@ namespace RecipeHelper.Persistance.Data.Configurations
             builder.Property(x => x.Difficulty).IsRequired();
             builder.Property(x => x.Description).HasMaxLength(300);
 
+            builder.HasMany(x => x.Users).WithMany(x => x.FavoriteRecipes);
+
             builder.HasData(SeedData());
         }
 
-        private Recipe[] SeedData()
+        private static Recipe[] SeedData()
         {
             return new[]
             {

@@ -11,6 +11,9 @@ namespace RecipeHelper.Persistance.Data.Context
         { }
 
         public DbSet<Recipe> Recipes { get; set; }
+        public DbSet<Ingredient> Ingredients { get; set; }
+
+        public DbSet<RecipeUser> RecipeUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

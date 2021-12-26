@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((ctx, lc) => lc
     .ReadFrom.Configuration(builder.Configuration)
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day));
+    .WriteTo.File("Logs/RecipeLog-.txt", rollingInterval: RollingInterval.Day));
     
 builder.Configuration.AddJsonFile("appsettings.json", false, true);
 builder.Configuration.AddJsonFile($"appsettings.{Environment.MachineName}.json", true, true);

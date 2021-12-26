@@ -2,8 +2,8 @@
 {
     public interface IBaseEntity<TId>
     {
-        public TId Id { get; set; }
+        TId Id { get; set; }
 
-        public string Name { get; set; }
+        string Name { get; set; }
     }
 }
