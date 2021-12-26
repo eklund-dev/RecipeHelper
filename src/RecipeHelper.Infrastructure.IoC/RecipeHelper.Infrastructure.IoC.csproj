@@ -14,8 +14,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RecipeHelper.Application\RecipeHelper.Application.csproj" />
+    <ProjectReference Include="..\RecipeHelper.Persistance.Data\RecipeHelper.Persistance.Data.csproj" />
     <ProjectReference Include="..\RecipeHelper.Persistance.Identity\RecipeHelper.Persistance.Identity.csproj" />
-    <ProjectReference Include="..\RecipeHelper.Persistance\RecipeHelper.Persistance.Data.csproj" />
   </ItemGroup>
 
 </Project>

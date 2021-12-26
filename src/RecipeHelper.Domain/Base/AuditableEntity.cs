@@ -1,6 +1,6 @@
 ﻿namespace RecipeHelper.Domain.Base
 {
-    public class AuditableEntity
+    public abstract class AuditableEntity
     {
         public string? CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }

@@ -12,9 +12,9 @@ namespace RecipeHelper.Persistance.Identity
 {
     public static class IdentityMigrationManager
     {
-        public static async Task<WebApplication> MigrateRecipeHelperIdentityDatabase(this WebApplication iHost)
+        public static async Task<WebApplication> MigrateRecipeHelperIdentityDatabase(this WebApplication webApp)
         {
-            using (var scope = iHost.Services.CreateScope())
+            using (var scope = webApp.Services.CreateScope())
             using (var appIdentityContext = scope.ServiceProvider.GetRequiredService<RecipeHelperIdentityDbContext>())
             {
                 var services = scope.ServiceProvider;
@@ -44,7 +44,7 @@ namespace RecipeHelper.Persistance.Identity
                 }
             }
 
-            return iHost;
+            return webApp;
         }
     }
 }

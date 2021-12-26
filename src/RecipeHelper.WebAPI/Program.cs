@@ -1,5 +1,5 @@
+using RecipeHelper.Infrastructure.IoC;
 using RecipeHelper.Infrastructure.IoC.Container;
-using RecipeHelper.Persistance.Identity;
 using RecipeHelper.WebAPI.Installers;
 using Serilog;
 
@@ -20,10 +20,9 @@ builder.Services.InstallServicesInAssembly(builder.Configuration);
 
 DependencyContainer.RegisterServices(builder.Services, builder.Configuration);
 
-
 var app = await builder
     .Build()
-    .MigrateRecipeHelperIdentityDatabase();
+    .MigrateProjectDatabases();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

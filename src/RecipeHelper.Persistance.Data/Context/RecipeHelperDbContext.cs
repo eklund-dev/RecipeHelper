@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeHelper.Domain.Base;
+using RecipeHelper.Domain.Entities;
 
 namespace RecipeHelper.Persistance.Data.Context
 {
@@ -9,11 +10,13 @@ namespace RecipeHelper.Persistance.Data.Context
             : base(options)
         { }
 
+        public DbSet<Recipe> Recipes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(RecipeHelperDbContext).Assembly);
         }
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {
@@ -36,7 +39,7 @@ namespace RecipeHelper.Persistance.Data.Context
                 }
             }
 
-            return base.SaveChangesAsync(cancellationToken);
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }

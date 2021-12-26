@@ -15,7 +15,7 @@ namespace RecipeHelper.Persistance.Identity.Containers
 
             services.AddDbContext<RecipeHelperIdentityDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("RecipeIdentityConnectionString"),
-                b => b.MigrationsAssembly(typeof(RecipeHelperIdentityDbContext).Assembly.FullName)), ServiceLifetime.Transient);
+                b => b.MigrationsAssembly(typeof(RecipeHelperIdentityDbContext).Assembly.FullName)));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                .AddEntityFrameworkStores<RecipeHelperIdentityDbContext>()
