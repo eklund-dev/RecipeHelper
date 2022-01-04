@@ -10,10 +10,11 @@ namespace RecipeHelper.Persistance.Data.Context
             : base(options)
         { }
 
-        public DbSet<Recipe> Recipes { get; set; }
-        public DbSet<Ingredient> Ingredients { get; set; }
-
-        public DbSet<RecipeUser> RecipeUsers { get; set; }
+        public DbSet<Recipe>? Recipes { get; set; }
+        public DbSet<Ingredient>? Ingredients { get; set; }
+        public DbSet<RecipeUser>? RecipeUsers { get; set; }
+        public DbSet<CourseCategory>? CourseCategories { get; set; }
+        public DbSet<RecipeFoodType>? RecipeFoodTypes { get; set; }     
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

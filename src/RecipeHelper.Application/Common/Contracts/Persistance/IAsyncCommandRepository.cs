@@ -1,4 +1,4 @@
-﻿namespace RecipeHelper.Application.Common.Contracts
+﻿namespace RecipeHelper.Application.Common.Contracts.Persistance
 {
     public interface IAsyncCommandRepository<TEntity> where TEntity : class
     {

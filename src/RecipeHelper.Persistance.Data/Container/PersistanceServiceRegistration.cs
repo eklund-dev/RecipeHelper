@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RecipeHelper.Application.Common.Contracts;
+using RecipeHelper.Application.Common.Contracts.Persistance;
 using RecipeHelper.Persistance.Data.Context;
 using RecipeHelper.Persistance.Data.Repositories.Base;
 

@@ -21,6 +21,8 @@ namespace RecipeHelper.Infrastructure.IoC.Container
             services.AddJwtServices(configuration);
 
             services.AddPersistanceServices(configuration);
+
+            services.AddApplicationServices(configuration);
         }
     }
 }

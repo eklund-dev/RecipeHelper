@@ -1,4 +1,4 @@
-﻿namespace RecipeHelper.Application.Common.Base
+﻿namespace RecipeHelper.Domain.Base
 {
     public interface IBaseEntity<TId>
     {

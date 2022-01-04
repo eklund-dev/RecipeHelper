@@ -29,8 +29,10 @@ namespace RecipeHelper.Persistance.Identity.Seed
                 roleList.Add(adminRole);
             }
 
-            roleList.ForEach(async role => await roleManager.CreateAsync(role));
-
+            foreach (var role in roleList)
+            {
+                _ = await roleManager.CreateAsync(role);
+            }
         }
     }
 }

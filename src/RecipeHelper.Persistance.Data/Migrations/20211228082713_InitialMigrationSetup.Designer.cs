@@ -12,8 +12,8 @@ using RecipeHelper.Persistance.Data.Context;
 namespace RecipeHelper.Persistance.Data.Migrations
 {
     [DbContext(typeof(RecipeHelperDbContext))]
-    [Migration("20211226140307_NewTables")]
-    partial class NewTables
+    [Migration("20211228082713_InitialMigrationSetup")]
+    partial class InitialMigrationSetup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,6 +37,39 @@ namespace RecipeHelper.Persistance.Data.Migrations
                     b.HasIndex("RecipesId");
 
                     b.ToTable("IngredientRecipe");
+                });
+
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.FavoriteRecipe", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastmodifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("RecipeUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipeUserId");
+
+                    b.ToTable("FavoriteRecipe");
                 });
 
             modelBuilder.Entity("RecipeHelper.Domain.Entities.Ingredient", b =>
@@ -65,21 +98,21 @@ namespace RecipeHelper.Persistance.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ingredients");
+                    b.ToTable("Ingredient", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("32187963-89d6-482f-a31e-2ca0b7868deb"),
+                            Id = new Guid("425498f8-c981-4796-a12c-8288762936f1"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2021, 12, 26, 14, 3, 6, 923, DateTimeKind.Utc).AddTicks(230),
+                            CreatedDate = new DateTime(2021, 12, 28, 8, 27, 12, 823, DateTimeKind.Utc).AddTicks(1950),
                             Name = "Salt"
                         },
                         new
                         {
-                            Id = new Guid("f22740e1-9da7-40ce-b13e-957f5ee36c2a"),
+                            Id = new Guid("d7b255e6-7ac1-4a3d-820a-1f1ffa78ecba"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2021, 12, 26, 14, 3, 6, 923, DateTimeKind.Utc).AddTicks(235),
+                            CreatedDate = new DateTime(2021, 12, 28, 8, 27, 12, 823, DateTimeKind.Utc).AddTicks(1953),
                             Name = "Peppar"
                         });
                 });
@@ -123,15 +156,15 @@ namespace RecipeHelper.Persistance.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recipes");
+                    b.ToTable("Recipe", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("850766c4-24f9-4a1e-851f-50f32f980095"),
+                            Id = new Guid("55921cce-0258-4ce3-9a7e-17b474c1d446"),
                             Category = 0,
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2021, 12, 26, 14, 3, 6, 923, DateTimeKind.Utc).AddTicks(1683),
+                            CreatedDate = new DateTime(2021, 12, 28, 8, 27, 12, 823, DateTimeKind.Utc).AddTicks(4021),
                             Description = "n/a",
                             Difficulty = 1,
                             Name = "Kyckling ris & Curry",
@@ -168,22 +201,7 @@ namespace RecipeHelper.Persistance.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RecipeUsers");
-                });
-
-            modelBuilder.Entity("RecipeRecipeUser", b =>
-                {
-                    b.Property<Guid>("FavoriteRecipesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("FavoriteRecipesId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("RecipeRecipeUser");
+                    b.ToTable("RecipeUser", (string)null);
                 });
 
             modelBuilder.Entity("IngredientRecipe", b =>
@@ -201,19 +219,20 @@ namespace RecipeHelper.Persistance.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RecipeRecipeUser", b =>
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.FavoriteRecipe", b =>
                 {
-                    b.HasOne("RecipeHelper.Domain.Entities.Recipe", null)
-                        .WithMany()
-                        .HasForeignKey("FavoriteRecipesId")
+                    b.HasOne("RecipeHelper.Domain.Entities.RecipeUser", "RecipeUser")
+                        .WithMany("FavoriteRecipes")
+                        .HasForeignKey("RecipeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RecipeHelper.Domain.Entities.RecipeUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("RecipeUser");
+                });
+
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeUser", b =>
+                {
+                    b.Navigation("FavoriteRecipes");
                 });
 #pragma warning restore 612, 618
         }

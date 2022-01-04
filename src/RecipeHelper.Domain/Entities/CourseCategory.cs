@@ -2,10 +2,12 @@
 
 namespace RecipeHelper.Domain.Entities
 {
-    public class Ingredient : AuditableEntity, IBaseEntity<Guid>
+    public class CourseCategory : AuditableEntity, IBaseEntity<int>
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; } = null!;
+
         public virtual ICollection<Recipe>? Recipes { get; set; }
+
     }
 }
