@@ -4,8 +4,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using RecipeHelper.Application.Common.Contracts;
 using RecipeHelper.Application.Common.Contracts.Interfaces.Auth;
+using RecipeHelper.Application.Common.Dtos.Identity;
 using RecipeHelper.Application.Common.Requests.Auth;
-using RecipeHelper.Application.Common.Responses.Identity;
+using RecipeHelper.Application.Common.Responses;
 using RecipeHelper.Common.Helpers;
 using RecipeHelper.Persistance.Identity.Context;
 using RecipeHelper.Persistance.Identity.Enums;
@@ -40,45 +41,26 @@ namespace RecipeHelper.Persistance.Identity.Services
             _userService = userService;
         }
 
-        public async Task<AuthResponse> AuthenticateAsync(AuthRequest request)
+        public async Task<Response<AuthDto>> AuthenticateAsync(AuthRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
-            if (user is null)
-            {
-                return new AuthResponse()
-                {
-                    Success = false,
-                    Errors = new[] { "User does not exist" }
-                };
-            }
+            if (user is null) return Response<AuthDto>.Fail("User does not exist");
+         
             var userHasValidPassword = await _userManager.CheckPasswordAsync(user, request.Password);
 
-            if (userHasValidPassword is false)
-            {
-                return new AuthResponse
-                {
-                    Success = false,
-                    Errors = new[] { "User/password combination is incorrect" }
-                };
-            }
+            if (userHasValidPassword is false) return Response<AuthDto>.Fail("User/password combination is incorrect");
 
             _logger.LogInformation($"Successful login for user with id {user.Id}", user);
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }
-        public async Task<AuthResponse> RegisterAsync(AuthRegisterRequest request)
+
+        public async Task<Response<AuthDto>> RegisterAsync(AuthRegisterRequest request)
         {
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
 
-            if (existingUser != null)
-            {
-                return new AuthResponse
-                {
-                    Success = false,
-                    Errors = new[] { $"User with email {request.Email} Already exists" }
-                };
-            }
+            if (existingUser != null) return Response<AuthDto>.Fail($"User with email {request.Email} Already exists");
 
             var newUser = new ApplicationUser
             {
@@ -90,14 +72,8 @@ namespace RecipeHelper.Persistance.Identity.Services
 
             var result = await _userManager.CreateAsync(newUser, request.Password);
 
-            if (!result.Succeeded)
-            {
-                return new AuthResponse
-                {
-                    Success = result.Succeeded,
-                    Errors = result.Errors.Select(x => x.Description)
-                };
-            }
+            if (!result.Succeeded) return Response<AuthDto>.Fail(result.Errors.Select(x => x.Description).ToList());
+
             // Adding new user the Standard RoleType 'User'
             await _userManager.AddToRoleAsync(newUser, Enum.GetName(typeof(RoleType), RoleType.User));
 
@@ -110,51 +86,32 @@ namespace RecipeHelper.Persistance.Identity.Services
 
         #region RefreshToken
 
-        public async Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request)
+        public async Task<Response<AuthDto>> RefreshTokenAsync(RefreshTokenRequest request)
         {
             var validatedToken = GetPrincipalFromToken(request.Token);
-            if (validatedToken == null)
-            {
-                return new AuthResponse { Errors = new[] { "Invalid Token" } };
-            }
+
+            if (validatedToken == null) return Response<AuthDto>.Fail("Invalid Token");
+  
 
             var expiryDateUnix = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
 
             var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddSeconds(expiryDateUnix);
 
-            if (expiryDateTimeUtc > DateTime.UtcNow)
-            {
-                return new AuthResponse { Errors = new[] { "This token hasn't expired yet" } };
-            }
+            if (expiryDateTimeUtc > DateTime.UtcNow) return Response<AuthDto>.Fail("This token hasn't expired yet");
 
             var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
             var storedRefreshToken = await _dbContext.RefreshToken.SingleOrDefaultAsync(r => r.TokenId == request.RefreshToken);
 
-            if (storedRefreshToken == null)
-            {
-                return new AuthResponse { Errors = new[] { "This refresh token does not exist" } };
-            }
+            if (storedRefreshToken == null) return Response<AuthDto>.Fail("This refresh token does not exist");
 
-            if (DateTime.UtcNow > storedRefreshToken.ExpireDate)
-            {
-                return new AuthResponse { Errors = new[] { "This refresh token has expired" } };
-            }
+            if (DateTime.UtcNow > storedRefreshToken.ExpireDate) return Response<AuthDto>.Fail("This refresh token has expired");
 
-            if (storedRefreshToken.Invalidated)
-            {
-                return new AuthResponse { Errors = new[] { "This refresh token has been invalidated" } };
-            }
+            if (storedRefreshToken.Invalidated) return Response<AuthDto>.Fail("This refresh token has been invalidated");
 
-            if (storedRefreshToken.Used)
-            {
-                return new AuthResponse { Errors = new[] { "This refresh token has been used" } };
-            }
+            if (storedRefreshToken.Used) return Response<AuthDto>.Fail("This refresh token has been used");
 
-            if (storedRefreshToken.JwtId != jti)
-            {
-                return new AuthResponse { Errors = new[] { "This refresh token does not match this JWT" } };
-            }
+            if (storedRefreshToken.JwtId != jti) return Response<AuthDto>.Fail("This refresh token does not match this JWT");
 
             storedRefreshToken.Used = true;
             _dbContext.RefreshToken.Update(storedRefreshToken);
@@ -164,19 +121,21 @@ namespace RecipeHelper.Persistance.Identity.Services
 
             return await GenerateAuthenticationResultForUserAsync(user);
         }
-        public async Task<RefreshTokenRevokeResponse> RevokeRefreshTokenAsync()
+        public async Task<Response<RefreshTokenRevokeDto>> RevokeRefreshTokenAsync()
         {
             var userClaims = _userService.GetUser();
             var userName = userClaims?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var userId = userClaims?.FindFirst("uid")?.Value;
             var userIp = userClaims?.FindFirst("ip")?.Value;
 
-            if (string.IsNullOrWhiteSpace(userId)) throw new Exception("Logged in User not found - the request could therefor not continue it's process");
+            if (string.IsNullOrWhiteSpace(userId)) 
+                throw new Exception("Logged in User not found - the request could therefore not continue it's process");
 
-            var refreshToken = await _dbContext.RefreshToken.Where(x => x.UserId == userId).OrderByDescending(x => x.CreationDate).FirstOrDefaultAsync();
+            var refreshToken = await _dbContext.RefreshToken
+                .Where(x => x.UserId == userId).OrderByDescending(x => x.CreationDate)
+                .FirstOrDefaultAsync();
 
-            if (refreshToken is null)
-                throw new NullReferenceException("Refreshtoken is null");
+            if (refreshToken is null) return Response<RefreshTokenRevokeDto>.Fail("Refreshtoken is null");
 
             try
             {
@@ -187,17 +146,15 @@ namespace RecipeHelper.Persistance.Identity.Services
                 throw new Exception("Database exception - could not remove Refreshtoken from database", ex);
             }
 
-            return new RefreshTokenRevokeResponse()
-            {
-                Success = true,
-                Message = "Refreshtoken successfully removed"
-            };
+            return Response<RefreshTokenRevokeDto>
+                .Success(new RefreshTokenRevokeDto { TokenRevoked = true }, "Refreshtoken successfully removed");
+
         }
 
         #endregion RefreshToken
 
         #region Auth Private Methods
-        private async Task<AuthResponse> GenerateAuthenticationResultForUserAsync(ApplicationUser user)
+        private async Task<Response<AuthDto>> GenerateAuthenticationResultForUserAsync(ApplicationUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSettings.Secret!);
@@ -243,13 +200,15 @@ namespace RecipeHelper.Persistance.Identity.Services
             await _dbContext.RefreshToken.AddAsync(refreshToken);
             await _dbContext.SaveChangesAsync();
 
-            return new AuthResponse
+            var authDto = new AuthDto
             {
-                Success = true,
                 Token = tokenHandler.WriteToken(token),
                 RefreshToken = refreshToken.JwtId,
                 RefreshTokenExpiration = refreshToken.ExpireDate
             };
+
+            return Response<AuthDto>.Success(authDto, "Authenticated");
+
         }
 
         private ClaimsPrincipal? GetPrincipalFromToken(string token)
@@ -276,8 +235,6 @@ namespace RecipeHelper.Persistance.Identity.Services
                 jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
                     StringComparison.InvariantCultureIgnoreCase);
         }
-
-        
 
         #endregion Auth Private Methods
     }

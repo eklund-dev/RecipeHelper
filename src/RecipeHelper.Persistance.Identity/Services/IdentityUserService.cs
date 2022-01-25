@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RecipeHelper.Application.Common.Contracts;
 using RecipeHelper.Application.Common.Contracts.Interfaces.Identity;
+using RecipeHelper.Application.Common.Dtos.Identity;
 using RecipeHelper.Application.Common.Requests.Users;
-using RecipeHelper.Application.Common.Responses.Identity;
+using RecipeHelper.Application.Common.Responses;
 using RecipeHelper.Domain.Exceptions;
 using RecipeHelper.Persistance.Identity.Context;
 using RecipeHelper.Persistance.Identity.Enums;
@@ -38,64 +40,55 @@ namespace RecipeHelper.Persistance.Identity.Services
         }
 
         #region Queries
-        public async Task<IReadOnlyList<ApplicationUserResponse>> GetAllAsync()
+        public async Task<Response<PaginatedList<ApplicationUserDto>>> GetPaginatedUsersAsync(int? pageNumber, int? pageSize)
         {
-            var users = await _userManager.Users
-                .Select(user => new ApplicationUserResponse
-                {
-                    Id = user.Id,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    EmailConfirmed = user.EmailConfirmed,
-                    FirstName = user.FirstName ?? "",
-                    LastName = user.LastName ?? "",
-                    Roles = _userManager.GetRolesAsync(user).Result,
-                    Success = true
-                }).ToListAsync();
+            var configuration = new MapperConfiguration(cfg =>
+                cfg.CreateMap<ApplicationUser, ApplicationUserDto>());
 
-            return (users.Any() ? 
-                users : 
-                throw new ApplicationUserViolationException("No users found in the database"));
+            var users = _userManager.Users.ProjectTo<ApplicationUserDto>(configuration);
+
+            var rs = await PaginatedList<ApplicationUserDto>.CreateFromEfQueryableAsync(users.AsNoTracking(), pageNumber ?? 1, pageSize ?? 10);
+
+            return Response<PaginatedList<ApplicationUserDto>>.Success(rs, "Succeeded");
         }
-
-        public async Task<ApplicationUserResponse> GetByIdAsync(string id)
+        
+        public async Task<Response<ApplicationUserDto>> GetUserByIdAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
 
-            return user is not null ?
-                new ApplicationUserResponse
+            return user is null ?
+                Response<ApplicationUserDto>.Fail($"User with id: {id} doesn't exist.") :
+                Response<ApplicationUserDto>.Success(new ApplicationUserDto
                 {
-                    Id = user.Id,
+                    Id = id,
                     UserName = user.UserName,
                     FirstName = user.FirstName ?? "",
                     LastName = user.LastName ?? "",
                     Email = user.Email!,
                     EmailConfirmed = user.EmailConfirmed,
                     Roles = await _userManager.GetRolesAsync(user)
-                } :
-                new ApplicationUserResponse
-                {
-                    Success = false,
-                    Errors = new[] { $"User with id: {id} doesn't exist." }
-                };
-                //throw new ApplicationUserViolationException($"User with id: {id} doesn't exist.");
+                }, "User Successfully fetched");
+           
         }
 
         #endregion
 
         #region Commands
-        public async Task<ApplicationUserResponse> CreateAsync(CreateUserRequest request)
+        public async Task<Response<ApplicationUserDto>> CreateUserAsync(CreateUserRequest request)
         {
-            var newAppUser = new ApplicationUser
-            {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-                UserName = request.UserName,
-            };
+            if (request is null) 
+                return Response<ApplicationUserDto>.Fail("Request appeared to empty, can't work with that you know.");
 
             try
             {
+                var newAppUser = new ApplicationUser
+                {
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Email = request.Email,
+                    UserName = request.UserName,
+                };
+
                 await _userManager.CreateAsync(newAppUser, request.Password);
                 _logger.LogInformation("New User has been created");
             }
@@ -104,31 +97,24 @@ namespace RecipeHelper.Persistance.Identity.Services
                 throw new ApplicationUserViolationException("A new user could not be created", ex.Message);
             }
 
-            return new ApplicationUserResponse
-            {
-                Success = true,
-                Message = "A new user has been created flawlessly. Great job!"
-            };
-        }
-        public async Task<ApplicationUserResponse> UpdateAsync(UpdateUserRequest request)
-        {
-            var userToUpdate = _userManager.FindByIdAsync(request.Id);
-            var response = new ApplicationUserResponse();
+            return Response<ApplicationUserDto>.Success("New user created.");
 
-            if(userToUpdate == null)
-            {
-                response.Success = false;
-                response.Message = "User could not be updated. The id did not match.";
-                return response;
-            }
+        }
+
+        public async Task<Response<ApplicationUserDto>> UpdateUserAsync(UpdateUserRequest request)
+        {
+            if (request is null)
+                return Response<ApplicationUserDto>.Fail("Request appeared to empty, can't work with that you know.");
+
+            if(await _userManager.FindByIdAsync(request.Id) is null)
+                return Response<ApplicationUserDto>.Fail("User does not exist.");
 
             try
             {
                 var mappedUser = _mapper.Map<ApplicationUser>(request);
                 await _userManager.UpdateAsync(mappedUser);
                 _logger.LogInformation($"User with Id {request.Id} has been updated succesfully.");
-                response.Success = true;
-                response.Message = $"User with Id {request.Id} has been updated";
+                return Response<ApplicationUserDto>.Success(_mapper.Map<ApplicationUserDto>(mappedUser), "User Updated");
             }
             catch (Exception ex)
             {
@@ -136,86 +122,74 @@ namespace RecipeHelper.Persistance.Identity.Services
                 throw new ApplicationRoleViolationException("Error occurred in UpdateAsync", ex.Message);
             }
 
-            return response;
-
         }
-        public async Task<ApplicationUserResponse> DeleteAsync(string id)
+        public async Task<Response<ApplicationUserDto>> DeleteUserAsync(string id)
         {
-            var response = new ApplicationUserResponse();
-            var user = await _userManager.FindByIdAsync(id);
-            
-            if (user == null)
+            if (string.IsNullOrWhiteSpace(id))
+                return Response<ApplicationUserDto>.Fail($"Id: {id} is either null or white space, try it again.");
+
+            try
             {
-                response.Success = false;
-                response.Errors = new[] { $"User with id {id} could not be found" };
-                return response;
+                var user = await _userManager.FindByIdAsync(id);
+                if (user is null) 
+                    return Response<ApplicationUserDto>.Fail($"User with id {id} could not be found");
+
+                var userRoles = await _userManager.GetRolesAsync(user);
+                userRoles.ToList().ForEach(async role => await _userManager.RemoveFromRoleAsync(user, role));
+
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded is false)
+                    return Response<ApplicationUserDto>.Fail("Could not delete user");
+
+                return Response<ApplicationUserDto>.Success($"User with id: {id} successfully deleted by {_userService.GetUser}");
+
             }
-
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            foreach (var role in userRoles)
+            catch (Exception ex)
             {
-                await _userManager.RemoveFromRoleAsync(user, role);                
+                _logger.LogError("Error occurred in DeleteAsync");
+                throw new ApplicationRoleViolationException("Error occurred in DeleteAsync", ex.Message);
             }
-
-            var result = await _userManager.DeleteAsync(user);
-            if (!result.Succeeded)
-            {
-                response.Success = false;
-                response.Message = "User successfully deleted.";
-            }
-
-            response.Success = result.Succeeded;
-            response.Message = "User successfully deleted";
-            return response;
             
         }
 
         // Borde refaktorera denna
-        public async Task<ApplicationUserResponse> ManageUserRoleAsync(ManageUserRoleRequest request)
+        public async Task<Response<ApplicationUserDto>> ManageUserRoleAsync(ManageUserRoleRequest request)
         {
-            var response = new ApplicationUserResponse();
-            var user = await _userManager.FindByIdAsync(request.UserId);
-
-            if (user == null)
+            if (request is null) 
+                return Response<ApplicationUserDto>.Fail("The request is empty, what are you doing?");
+            
+            try
             {
-                return response;
-            }
+                var user = await _userManager.FindByIdAsync(request.UserId);
+                if (user is null)
+                    return Response<ApplicationUserDto>.Fail($"The user with id {request.UserId} could not be found");
 
-            var existingRoles = await _userManager.GetRolesAsync(user);
-            var result = await _userManager.RemoveFromRolesAsync(user, existingRoles);
+                var existingRoles = await _userManager.GetRolesAsync(user);
+                var result = await _userManager.RemoveFromRolesAsync(user, existingRoles);
 
-            if (!result.Succeeded)
-            {
-                response.Success = false;
-                response.Errors = new[] { $"Could not remove existing roles from user with id {user.Id}" };
-            }
+                if (result.Succeeded is false)
+                    return Response<ApplicationUserDto>.Fail($"Step 1 'Removing existing roles' -> Could not change roles for user with id {user.Id}");
 
-            result = await _userManager.AddToRolesAsync(user, request.Roles);
-           
-            if (!result.Succeeded)
-            {
-                response.Success = false;
-                response.Errors = new[] { $"Could not Add new roles for user with id {user.Id}" };
-            }
+                result = await _userManager.AddToRolesAsync(user, request.Roles);
+                    
+                if (result.Succeeded is false)
+                    return Response<ApplicationUserDto>.Fail($"Step 2: 'Adding new roles' -> Could not change roles for user with id {user.Id}");
 
-            // Specialsteg för admins
-            if (existingRoles.Contains(Enum.GetName(typeof(RoleType), RoleType.Admin)) && 
-                await _userManager.IsInRoleAsync(user, "Admin") is false)
-            {
-                result = await _userManager.AddToRoleAsync(user, Enum.GetName(typeof(RoleType), RoleType.Admin));
-
-                if (!result.Succeeded)
+                if (existingRoles.Contains(Enum.GetName(typeof(RoleType), RoleType.Owner)) &&
+                await _userManager.IsInRoleAsync(user, "Owner") is false)
                 {
-                    response.Success = false;
-                    response.Errors = new[] { $"User with id:{user.Id} is a former admin and could therefor not lose the title through this call" };
+                    return Response<ApplicationUserDto>.Fail($"User with id: {user.Id} is the one and only OWNER and could therefore not lose the title through this api call");
                 }
+
+                return Response<ApplicationUserDto>.Success($"Roles has been updated for User: {user.UserName}.");
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occurred in {nameof(ManageUserRoleAsync)}");
+                throw new ApplicationRoleViolationException("Error occurred in DeleteAsync", ex.Message);
             }
 
-            response.Success = true;
-            response.Roles = request.Roles;
-
-            return response;
         }
 
         #endregion

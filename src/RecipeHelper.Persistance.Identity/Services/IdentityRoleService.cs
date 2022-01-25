@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RecipeHelper.Application.Common.Contracts;
 using RecipeHelper.Application.Common.Contracts.Interfaces.Identity.Roles;
+using RecipeHelper.Application.Common.Dtos.Identity;
 using RecipeHelper.Application.Common.Requests.Roles;
+using RecipeHelper.Application.Common.Responses;
 using RecipeHelper.Application.Common.Responses.Identity;
+using RecipeHelper.Domain.Exceptions;
 using RecipeHelper.Persistance.Identity.Context;
 using RecipeHelper.Persistance.Identity.Dtos;
 using RecipeHelper.Persistance.Identity.Models;
@@ -32,71 +36,61 @@ namespace RecipeHelper.Persistance.Identity.Services
             _dbContext = dbContext;
         }
 
-
         #region Queries
 
-        public async Task<IReadOnlyList<ApplicationRoleResponse>> GetAllAsync()
+        public async Task<Response<PaginatedList<ApplicationRoleDto>>> GetAllAsync(int? pageNumber, int? pageSize)
         {
-            var roleListResponse = new List<ApplicationRoleResponse>();
+            var roleList = new List<ApplicationRoleDto>();
+            PaginatedList<ApplicationRoleDto> paginatedList;
 
             try
             {
-                var roles = await _roleManager.Roles.ToListAsync();
-                if (!roles.Any())
+
+                var roles = _dbContext.Roles.Include(x => x.UserRoles).ThenInclude(us => us.User).Select(x => new ApplicationRoleDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Users = x.UserRoles.Select(xx => new UserInRoleDto
+                    {
+                        FirstName = xx.User.FirstName ?? "",
+                        LastName = xx.User.LastName ?? "",
+                        UserId = xx.UserId,
+                        UserName = xx.User.UserName
+                    })
+                });
+
+                //Refaktorera denn
+
+                if(roles.GetEnumerator().MoveNext() is false)
                 {
                     _logger.LogInformation($"GetAllRolesAsync didn't return any roles for user with id: { _userService.GetUser() } ");
                     throw new Exception("No Roles in the application was found, ask the administrator for help.");
                 }
 
-                foreach (var role in roles)
-                {
-                    var roleResponse = new ApplicationRoleResponse
-                    {
-                        Id = role.Id,
-                        Name = role.Name,
-                        Users = _userManager.Users
-                            .Include(usr => usr.UserRoles!)
-                            .ThenInclude(ur => ur.Role)
-                            .Select(x => new UserInRoleDto
-                            {
-                                FirstName = x.FirstName ?? "",
-                                LastName = x.LastName ?? "",
-                                UserId = x.Id,
-                                UserName = x.UserName ?? ""
-                            }).ToList(),
-                        Success = true
-                    };
-
-                    roleListResponse.Add(roleResponse);
-                }
+                paginatedList = await PaginatedList<ApplicationRoleDto>.CreateFromEfQueryableAsync(roles, pageNumber ?? 1, pageSize ?? 10);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Unhandled exception occurred in IdentityRoleService", ex.Message);
-                throw new Exception("An unhandled exception got caught", ex);
+                throw new ApplicationRoleViolationException("An unhandled exception got caught", ex);
             }
 
-            return roleListResponse;
+            return Response<PaginatedList<ApplicationRoleDto>>.Success(paginatedList, "Succeeded");
         }
 
-        public async Task<ApplicationRoleResponse> GetByIdAsync(string id)
+        public async Task<Response<ApplicationRoleDto>> GetByIdAsync(string id)
         {
             var role = await _roleManager.Roles.Where(x => x.Id == id).SingleOrDefaultAsync();
 
-            if (role is null)
-            {
-                return new ApplicationRoleResponse
-                {
-                    Success = false,
-                    Errors = new[] { $"There is no role attached to the provided id: '{id}'." }
-                };
-            }
+            if (role is null) return Response<ApplicationRoleDto>.Fail($"There is no role attached to the provided id: '{id}'.");
 
-            return new ApplicationRoleResponse
+            var applicationRoleDto = new ApplicationRoleDto
             {
-                Id = role!.Id,
+                Id = role.Id,
                 Name = role.Name,
-                Users = await _userManager.Users.Include(usr => usr.UserRoles!).ThenInclude(ur => ur.Role)
+                Users = await _userManager.Users
+                    .Include(usr => usr.UserRoles!)
+                    .ThenInclude(ur => ur.Role)
                     .Select(x => new UserInRoleDto
                     {
                         FirstName = x.FirstName ?? "",
@@ -104,42 +98,29 @@ namespace RecipeHelper.Persistance.Identity.Services
                         UserId = x.Id,
                         UserName = x.UserName ?? ""
                     }).ToListAsync(),
-                Success = true,
             };
+
+            return Response<ApplicationRoleDto>.Success(applicationRoleDto, "Role fetched");
+         
         }
 
         #endregion
 
         #region Commands
 
-        public async Task<ApplicationRoleResponse> DeleteAsync(string id)
+        public async Task<Response<ApplicationRoleDto>> DeleteAsync(string id)
         {
             var roleToDelete = await _roleManager.FindByIdAsync(id);
             var response = new ApplicationRoleResponse();
 
             // Check if role exists
-            if (roleToDelete is null)
-            {
-                response.Success = false;
-                response.Errors = new[]
-                {
-                    $"Role with id: {id} could not be found - you can't delete what you don't have."
-                };
-
-                return response;
-            }
+            if (roleToDelete is null) 
+                return Response<ApplicationRoleDto>.Fail($"Role with id: {id} could not be found - you can't delete what you don't have.");
+           
 
             // Check if any users belong to this role
             if (_dbContext.UserRoles.Where(x => x.RoleId == id).Any())
-            {
-                response.Success = false;
-                response.Errors = new[]
-                {
-                    $"Role with id {id} could not be deleted. Users exists."
-                };
-
-                return response;
-            }
+                return Response<ApplicationRoleDto>.Fail($"Role with id {id} could not be deleted. Users exists.");
 
             try
             {
@@ -153,46 +134,38 @@ namespace RecipeHelper.Persistance.Identity.Services
                 throw new ArgumentException("Delete process went south.", ex.Message);
             }
 
-            return response;
+            return Response<ApplicationRoleDto>.Success("Role successfully deleted");
 
         }
 
-        public async Task<ApplicationRoleResponse> CreateAsync(CreateRoleRequest request)
+        public async Task<Response<ApplicationRoleDto>> CreateAsync(CreateRoleRequest request)
         {
             var newRole = new ApplicationRole { Name = request.Name };
-            var response = new ApplicationRoleResponse();
+            var dto = new ApplicationRoleDto();
 
             try
             {
                 await _roleManager.CreateAsync(newRole);
-                response.Success = true;
-                response.Name = newRole.Name;
+                dto.Name = request.Name;
+                dto.Id = newRole.Id;
             }
             catch (Exception ex)
             {
                 throw new ArgumentException("Create process went south.", ex.Message);
             }
 
-            return response;
+            return Response<ApplicationRoleDto>.Success(dto, "Role created");
 
         }
 
-        public async Task<ApplicationRoleResponse> UpdateAsync(UpdateRoleRequest request)
+        public async Task<Response<ApplicationRoleDto>> UpdateAsync(UpdateRoleRequest request)
         {
             var roleToUpdate = await _roleManager.FindByIdAsync(request.Id);
-            var response = new ApplicationRoleResponse();
+            var dto = new ApplicationRoleDto();
 
             // Check for null
-            if (roleToUpdate is null)
-            {
-                response.Success = false;
-                response.Errors = new[]
-                {
-                    $"Role with id: {request.Id} could not be found - you can't delete what you don't have."
-                };
-
-                return response;
-            }
+            if (roleToUpdate is null) 
+                return Response<ApplicationRoleDto>.Fail($"Role with id: {request.Id} could not be found - you can't delete what you don't have.");
 
             try
             {
@@ -200,9 +173,8 @@ namespace RecipeHelper.Persistance.Identity.Services
                 roleToUpdate.NormalizedName = request.Name.ToUpper();
                 await _roleManager.UpdateAsync(roleToUpdate);
 
-                response.Success = true;
-                response.Id = roleToUpdate.Id;
-                response.Name = roleToUpdate.Name;
+                dto.Id = roleToUpdate.Id;
+                dto.Name = roleToUpdate.Name;
                 
             }
             catch (Exception ex)
@@ -210,7 +182,7 @@ namespace RecipeHelper.Persistance.Identity.Services
                 throw new ArgumentException("Update process went south.", ex.Message);
             }
 
-            return response;
+            return Response<ApplicationRoleDto>.Success(dto, "Role updated");
         }
 
         #endregion
