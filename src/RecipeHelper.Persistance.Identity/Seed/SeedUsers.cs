@@ -8,51 +8,78 @@ namespace RecipeHelper.Persistance.Identity.Seed
     {
         public static async Task SeedAsync(UserManager<ApplicationUser> userManager)
         {
-            foreach (var user  in GetSeedUserList())
+            foreach (var user in GetSeedUserList())
             {
                 if (await userManager.FindByEmailAsync(user.Email) is null)
                 {
                     var result = await userManager.CreateAsync(user, "Abc123!");
                     if (result.Succeeded)
                     {
-                        _ = user.FirstName switch
+                        switch (user.FirstName)
                         {
-                            "User" => userManager.AddToRoleAsync(user, Enum.GetName(typeof(RoleType), RoleType.User)),
-                            "Admin" => userManager.AddToRoleAsync(user, Enum.GetName(typeof(RoleType), RoleType.Admin)),
-                            _ => userManager.AddToRoleAsync(user, Enum.GetName(typeof(RoleType), RoleType.User))
-                        };
+                            case "User":
+                                await AddRegularUser(userManager, user);
+                                break;
+                            case "Admin":
+                                await AddAdminUser(userManager, user);
+                                break;
+                            case "Owner":
+                                await AddOwnerUser(userManager, user);
+                                break;
+                            default:
+                                await AddRegularUser(userManager, user);
+                                break;
+                        }
                     }
                 }
             }
+        }
 
+        private static async Task AddRegularUser(UserManager<ApplicationUser> userManager, ApplicationUser user)
+        {
+            await userManager.AddClaimAsync(user, new System.Security.Claims.Claim("admin.view", "false"));
+            await userManager.AddToRoleAsync(user, Enum.GetName(typeof(RoleType), RoleType.User));
+
+        }
+        private static async Task AddAdminUser(UserManager<ApplicationUser> userManager, ApplicationUser user)
+        {
+            await userManager.AddClaimAsync(user, new System.Security.Claims.Claim("admin.view", "true"));
+            await userManager.AddToRoleAsync(user, Enum.GetName(typeof(RoleType), RoleType.Admin));
+        }
+        private static async Task AddOwnerUser(UserManager<ApplicationUser> userManager, ApplicationUser user)
+        {
+            await userManager.AddClaimAsync(user, new System.Security.Claims.Claim("admin.view", "true"));
+            await userManager.AddToRoleAsync(user, Enum.GetName(typeof(RoleType), RoleType.Owner));
         }
         private static List<ApplicationUser> GetSeedUserList()
         {
-            var userList = new List<ApplicationUser>();
-
-            var user = new ApplicationUser
+            return new List<ApplicationUser>()
             {
-                FirstName = "User",
-                LastName = "Eklund",
-                UserName = "CookingNovice",
-                Email = "user@recipeHelper.com",
-                EmailConfirmed = true,
+                new ApplicationUser
+                {
+                    FirstName = "User",
+                    LastName = "Eklund",
+                    UserName = "CookingNovice",
+                    Email = "user@recipeHelper.com",
+                    EmailConfirmed = true,
+                },
+                new ApplicationUser
+                {
+                    FirstName = "Admin",
+                    LastName = "Eklund",
+                    UserName = "RecipeGuru",
+                    Email = "admin@recipehelper.com",
+                    EmailConfirmed = true
+                },
+                new ApplicationUser
+                {
+                    FirstName = "Owner",
+                    LastName = "Eklund",
+                    UserName = "MrInfinity",
+                    Email = "chekazure@gmail.com",
+                    EmailConfirmed = true
+                }
             };
-
-            userList.Add(user);
-
-            var adminUser = new ApplicationUser
-            {
-                FirstName = "Admin",
-                LastName = "Eklund",
-                UserName = "TheProSaver",
-                Email = "chekazure@gmail.com",
-                EmailConfirmed = true
-            };
-
-            userList.Add(adminUser);
-
-            return userList;
         }
     }
 }

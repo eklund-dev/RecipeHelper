@@ -25,10 +25,10 @@ namespace RecipeHelper.Persistance.Identity
                 {
                     await appIdentityContext.Database.MigrateAsync();
                     var identityContext = services.GetRequiredService<RecipeHelperIdentityDbContext>();
-                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-                    var roleStore = new RoleStore<IdentityRole>(identityContext);
+                    var roleStore = new RoleStore<ApplicationRole>(identityContext);
                     var listofRoles = roleManager.Roles.ToList();
 
                     await SeedRoles.SeedAsync(roleManager);

@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RecipeHelper.Application.Common.Contracts;
 using RecipeHelper.Application.Common.Services;
 using RecipeHelper.Persistance.Data.Container;
-using RecipeHelper.Persistance.Identity.Containers;
+using RecipeHelper.Persistance.Identity.Container;
 
 namespace RecipeHelper.Infrastructure.IoC.Container
 {

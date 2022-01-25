@@ -2,25 +2,41 @@
 {
     public static class ApiRoutes
     {
-        public const string ApiVersion1 = "api/v1/";
+        private const string ApiVersion1 = "recipeApi/v1/";
 
-        public class Authenticate
+        public class Auth
         {
-            private const string Base = ApiVersion1 + "authenticate/";
+            private const string _base = ApiVersion1 + "auth/";
 
-            public const string Login = Base + "login";
-            public const string Register = Base + "register";
-            public const string Refresh = Base + "refresh";
+            public const string Login = _base + "login";
+            public const string Register = _base + "register";
+            public const string Refresh = _base + "refresh";
+        }
+
+        public class Identity
+        {
+            private const string _base = ApiVersion1 + "identity/";
+
+            public const string GetUser = _base + "user/{id}";
+            public const string GetAllUsers = _base + "user";
+            public const string UpdateUser = _base + "user";
+            public const string DeleteUser = _base + "user/{id}";
+
+            public const string GetRole = _base + "role/{id}";
+            public const string GetAllRoles = _base + "role";
+            public const string CreateRole = _base + "role";
+            public const string UpdateRole = _base + "role";
+            public const string DeleteRole = _base + "role/{id}";
         }
 
         public class Recipe
         {
-            private const string Base = ApiVersion1 + "recipe/";
+            private const string _base = ApiVersion1 + "recipe/";
 
-            public const string Get = Base + "{id}";
-            public const string GetAll = Base;
-            public const string Update = Base;
-            public const string Add = Base;
+            public const string Get = _base + "{id}";
+            public const string GetAll = _base;
+            public const string Update = _base;
+            public const string Add = _base;
             public const string Delete = "{id}";
         }
     }

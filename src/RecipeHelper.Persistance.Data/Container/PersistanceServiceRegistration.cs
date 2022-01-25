@@ -11,8 +11,18 @@ namespace RecipeHelper.Persistance.Data.Container
     {
         public static IServiceCollection AddPersistanceServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<RecipeHelperDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("RecipeConnectionstring")));
+            if (configuration.GetValue<bool>("UseInMemoryDatabase"))
+            {
+                services.AddDbContext<RecipeHelperDbContext>(options =>
+                    options.UseInMemoryDatabase("RecipeHelperDb"));
+            }
+            else
+            {
+                services.AddDbContext<RecipeHelperDbContext>(options =>
+                    options.UseSqlServer(
+                        configuration.GetConnectionString("RecipeConnectionstring"),
+                        b => b.MigrationsAssembly(typeof(RecipeHelperDbContext).Assembly.FullName)));
+            }
             
             services.AddScoped(typeof(IAsyncCommandRepository<>), typeof(BaseCommandRepository<>));
             services.AddScoped(typeof(IAsyncReadRepository<,>), typeof(BaseReadRepository<,>));

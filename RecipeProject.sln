@@ -23,9 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.IntegrationTes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.Infrastructure.IoC", "src\RecipeHelper.Infrastructure.IoC\RecipeHelper.Infrastructure.IoC.csproj", "{CCECB718-CA34-493B-AF2F-8F222CA66530}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.Persistance.Identity", "src\RecipeHelper.Persistance.Identity\RecipeHelper.Persistance.Identity.csproj", "{B05DC793-7A4E-48E2-9F7A-6BE793E7DB8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.Persistance.Identity", "src\RecipeHelper.Persistance.Identity\RecipeHelper.Persistance.Identity.csproj", "{B05DC793-7A4E-48E2-9F7A-6BE793E7DB8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeHelper.Persistance.Data", "src\RecipeHelper.Persistance.Data\RecipeHelper.Persistance.Data.csproj", "{5174E916-CF88-44CA-BF52-9FEC2053E109}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeHelper.Persistance.Data", "src\RecipeHelper.Persistance.Data\RecipeHelper.Persistance.Data.csproj", "{5174E916-CF88-44CA-BF52-9FEC2053E109}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

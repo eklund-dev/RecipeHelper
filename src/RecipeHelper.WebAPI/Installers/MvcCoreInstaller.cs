@@ -23,7 +23,10 @@ namespace RecipeHelper.WebAPI.Installers
             .AddFluentValidation(mvcConfig =>
              mvcConfig.RegisterValidatorsFromAssemblyContaining<Program>());
 
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Administrator", builder => builder.RequireClaim("admin.view", "true"));
+            });
         }
     
     }
