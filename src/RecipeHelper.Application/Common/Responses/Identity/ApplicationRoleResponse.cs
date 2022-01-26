@@ -2,7 +2,7 @@
 
 namespace RecipeHelper.Application.Common.Responses.Identity
 {
-    public class ApplicationRoleResponse : BaseResponse
+    public class ApplicationRoleResponse
     {
         public string Id { get; set; }
         public string Name { get; set; }

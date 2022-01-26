@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using RecipeHelper.Application.Common.Contracts.Interfaces.Identity;
 using RecipeHelper.Application.Common.Contracts.Interfaces.Identity.Roles;
 using RecipeHelper.Application.Common.Dtos.Identity;
+using RecipeHelper.Application.Common.QueryParameters;
 using RecipeHelper.Application.Common.Requests.Roles;
+using RecipeHelper.Application.Common.Requests.Users;
 using RecipeHelper.Application.Common.Responses;
-using RecipeHelper.Application.Common.Responses.Identity;
 using RecipeHelper.WebAPI.Routes.v1;
 
 namespace RecipeHelper.WebAPI.Controllers.v1
@@ -37,16 +38,53 @@ namespace RecipeHelper.WebAPI.Controllers.v1
         {
             var response = await _identityUserService.GetUserByIdAsync(id);
             
-            return response.Succeeded ? Ok(response) : BadRequest(response);
+            return response.Succeeded ? 
+                Ok(response) : 
+                BadRequest(response);
         }
 
         [HttpGet(ApiRoutes.Identity.GetAllUsers)]
-        [ProducesResponseType(typeof(Response<ApplicationUserDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetUsersAsync()
+        [ProducesResponseType(typeof(Response<PaginatedList<ApplicationUserDto>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetUsersAsync([FromQuery] ApplicationUserQueryParameters parameters)
         {
-            var response = await _identityUserService.GetPaginatedUsersAsync(1, 10);
+            var response = await _identityUserService.GetPaginatedUsersAsync(parameters.PageNumber, parameters.PageSize);
 
-            return response.Succeeded ? Ok(response) : BadRequest(response);
+            return response.Succeeded ? 
+                Ok(response) : 
+                BadRequest(response);
+        }
+
+        [HttpPost(ApiRoutes.Identity.CreateUser)]
+        [ProducesResponseType(typeof(Response<ApplicationUserDto>), StatusCodes.Status201Created)]
+        public async Task<IActionResult> CreateUserAsync([FromBody] CreateUserRequest request)
+        {
+            var response = await _identityUserService.CreateUserAsync(request);
+
+            return response.Succeeded ? 
+                Ok(response) : 
+                BadRequest(response);
+        }
+        
+        [HttpPut(ApiRoutes.Identity.UpdateUser)]
+        [ProducesResponseType(typeof(Response<ApplicationUserDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateUserAsync([FromBody] UpdateUserRequest request)
+        {
+            var response = await _identityUserService.UpdateUserAsync(request);
+
+            return response.Succeeded ? 
+                Ok(response) : 
+                BadRequest(response);
+        }
+
+        [HttpDelete(ApiRoutes.Identity.DeleteUser)]
+        [ProducesResponseType(typeof(Response<ApplicationUserDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteUserAsyn([FromRoute] string id)
+        {
+            var response = await _identityUserService.DeleteUserAsync(id);
+
+            return response.Succeeded ? 
+                Ok(response) : 
+                BadRequest(response);
         }
 
         #endregion
@@ -62,9 +100,9 @@ namespace RecipeHelper.WebAPI.Controllers.v1
 
         [HttpGet(ApiRoutes.Identity.GetAllRoles)]
         [ProducesResponseType(typeof(Response<ApplicationRoleDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetRolesAsync()
+        public async Task<IActionResult> GetRolesAsync([FromQuery] ApplicationRoleQueryParameters parameters)
         {
-            var roleListResponse = await _identityRoleService.GetAllAsync(1, 10);
+            var roleListResponse = await _identityRoleService.GetAllAsync(parameters.PageNumber, parameters.PageSize);
 
             return Ok(roleListResponse);
         }

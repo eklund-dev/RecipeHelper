@@ -19,6 +19,7 @@
 
             public const string GetUser = _base + "user/{id}";
             public const string GetAllUsers = _base + "user";
+            public const string CreateUser = _base + "user";
             public const string UpdateUser = _base + "user";
             public const string DeleteUser = _base + "user/{id}";
 

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RecipeHelper.Application.Common.Contracts.Persistance;
 using RecipeHelper.Persistance.Data.Context;
 using RecipeHelper.Persistance.Data.Repositories.Base;
+using RecipeHelper.Persistance.Data.Repositories.Recipes;
 
 namespace RecipeHelper.Persistance.Data.Container
 {
@@ -25,8 +26,8 @@ namespace RecipeHelper.Persistance.Data.Container
             }
             
             services.AddScoped(typeof(IAsyncCommandRepository<>), typeof(BaseCommandRepository<>));
-            services.AddScoped(typeof(IAsyncReadRepository<,>), typeof(BaseReadRepository<,>));
-
+            services.AddScoped(typeof(IAsyncReadRepository<>), typeof(BaseReadRepository<>));
+            services.AddScoped<IRecipeReadRepository, RecipeReadRepository>();
             return services;
         }
     }

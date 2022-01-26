@@ -1,6 +1,6 @@
 ﻿namespace RecipeHelper.Application.Common.Responses.Identity
 {
-    public class ApplicationUserResponse : BaseResponse
+    public class ApplicationUserResponse
     {
         public string Id { get; set; }
         public string FirstName { get; set; }

@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RecipeHelper.Application.Common.Dtos.Recipes;
+using RecipeHelper.Application.Common.QueryParameters;
+using RecipeHelper.Application.Common.Responses;
 using RecipeHelper.Application.Features.Recipes.Queries.GetRecipeDetails;
 using RecipeHelper.Application.Features.Recipes.Queries.GetRecipeList;
-using RecipeHelper.Application.Recipes.Responses;
 using RecipeHelper.WebAPI.Routes.v1;
 
 namespace RecipeHelper.WebAPI.Controllers.v1
@@ -22,26 +24,26 @@ namespace RecipeHelper.WebAPI.Controllers.v1
         }
 
         [HttpGet(ApiRoutes.Recipe.Get)]
-        [ProducesResponseType(typeof(RecipeQueryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Response<RecipeQueryDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetSingleRecipeAsync([FromRoute] Guid id)
+        public async Task<IActionResult> GetSingleRecipeAsync([FromRoute] string id)
         {
             var response = await _mediator.Send(new GetRecipeDetailsByIdQuery { Id = id });
 
-            return response.Success == true ? Ok(response) : BadRequest(response);
+            return response.Succeeded == true ? Ok(response) : BadRequest(response);
         }
 
         [HttpGet(ApiRoutes.Recipe.GetAll)]
         [Authorize(Policy = "Administrator")]
-        [ProducesResponseType(typeof(RecipeQueryAllResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Response<PaginatedList<RecipeQueryDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetAllRecipesAsync()
+        public async Task<IActionResult> GetAllRecipesAsync([FromQuery] RecipeQueryParameters parameters)
         {
-            var response = await _mediator.Send(new GetRecipeListQuery());
+            var response = await _mediator.Send(new GetRecipeListQuery { Parameters = parameters });
 
-            return response.Success == true ? Ok(response) : BadRequest(response);
+            return response.Succeeded == true ? Ok(response) : BadRequest(response);
         }
     }
 }

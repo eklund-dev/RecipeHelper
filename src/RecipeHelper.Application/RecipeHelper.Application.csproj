@@ -24,7 +24,6 @@
   <ItemGroup>
     <Folder Include="Common\Validators\Recipes\" />
     <Folder Include="Features\Recipes\Commands\" />
-    <Folder Include="Features\Recipes\Requests\" />
   </ItemGroup>
 
   <ItemGroup>

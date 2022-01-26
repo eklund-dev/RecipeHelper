@@ -111,13 +111,11 @@ namespace RecipeHelper.Persistance.Identity.Services
         public async Task<Response<ApplicationRoleDto>> DeleteAsync(string id)
         {
             var roleToDelete = await _roleManager.FindByIdAsync(id);
-            var response = new ApplicationRoleResponse();
 
             // Check if role exists
             if (roleToDelete is null) 
                 return Response<ApplicationRoleDto>.Fail($"Role with id: {id} could not be found - you can't delete what you don't have.");
            
-
             // Check if any users belong to this role
             if (_dbContext.UserRoles.Where(x => x.RoleId == id).Any())
                 return Response<ApplicationRoleDto>.Fail($"Role with id {id} could not be deleted. Users exists.");
@@ -125,9 +123,6 @@ namespace RecipeHelper.Persistance.Identity.Services
             try
             {
                 await _roleManager.DeleteAsync(roleToDelete);
-                response.Success = true;
-                response.Id = roleToDelete.Id;
-                response.Name = roleToDelete.Name;
             }
             catch (Exception ex)
             {

@@ -5,11 +5,9 @@ using RecipeHelper.Persistance.Data.Repositories.Base;
 
 namespace RecipeHelper.Persistance.Data.Repositories.Recipes
 {
-    public class RecipeReadRepository : BaseReadRepository<Recipe, Guid>, IRecipeReadRepository
+    public class RecipeReadRepository : BaseReadRepository<Recipe>, IRecipeReadRepository
     {
-        public RecipeReadRepository(RecipeHelperDbContext dbContext) : base(dbContext)
-        {
+        public RecipeReadRepository(RecipeHelperDbContext dbContext) : base(dbContext) { }
 
-        }
     }
 }
