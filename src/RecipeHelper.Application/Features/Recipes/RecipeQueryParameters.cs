@@ -1,4 +1,4 @@
-﻿namespace RecipeHelper.Application.Common.QueryParameters
+﻿namespace RecipeHelper.Application.Features.Recipes
 {
     public class RecipeQueryParameters
     {
@@ -8,7 +8,7 @@
         public int PageSize
         {
             get { return _pageSize; }
-            set { _pageSize = (value > _maxPageSize) ? _maxPageSize : value; }
+            set { _pageSize = value > _maxPageSize ? _maxPageSize : value; }
         }
     }
 }

@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RecipeHelper.Application.Common.Dtos.Recipes;
-using RecipeHelper.Application.Common.QueryParameters;
 using RecipeHelper.Application.Common.Responses;
+using RecipeHelper.Application.Features.Recipes;
 using RecipeHelper.Application.Features.Recipes.Queries.GetRecipeDetails;
 using RecipeHelper.Application.Features.Recipes.Queries.GetRecipeList;
+using RecipeHelper.Domain.Exceptions;
 using RecipeHelper.WebAPI.Routes.v1;
 
 namespace RecipeHelper.WebAPI.Controllers.v1
@@ -24,24 +24,31 @@ namespace RecipeHelper.WebAPI.Controllers.v1
         }
 
         [HttpGet(ApiRoutes.Recipe.Get)]
-        [ProducesResponseType(typeof(Response<RecipeQueryDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Response<RecipeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetSingleRecipeAsync([FromRoute] string id)
+        public async Task<IActionResult> GetSingleRecipeAsync([FromRoute] Guid id)
         {
-            var response = await _mediator.Send(new GetRecipeDetailsByIdQuery { Id = id });
+            try
+            {
+                var response = await _mediator.Send(new GetRecipeDetailsByIdQuery { Id = id });
+                return response.Succeeded == true ? Ok(response) : BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                throw new ApiException(ex.Message);
+            }
 
-            return response.Succeeded == true ? Ok(response) : BadRequest(response);
         }
 
         [HttpGet(ApiRoutes.Recipe.GetAll)]
         [Authorize(Policy = "Administrator")]
-        [ProducesResponseType(typeof(Response<PaginatedList<RecipeQueryDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Response<PaginatedList<RecipeDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAllRecipesAsync([FromQuery] RecipeQueryParameters parameters)
         {
-            var response = await _mediator.Send(new GetRecipeListQuery { Parameters = parameters });
+            var response = await _mediator.Send(new GetRecipeListQuery { QueryParameters = parameters });
 
             return response.Succeeded == true ? Ok(response) : BadRequest(response);
         }

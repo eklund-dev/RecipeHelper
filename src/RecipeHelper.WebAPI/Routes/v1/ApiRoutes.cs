@@ -37,7 +37,18 @@
             public const string Get = _base + "{id}";
             public const string GetAll = _base;
             public const string Update = _base;
-            public const string Add = _base;
+            public const string Create = _base;
+            public const string Delete = "{id}";
+        }
+
+        public class Ingredient
+        {
+            private const string _base = ApiVersion1 + "ingredient/";
+
+            public const string Get = _base + "{id}";
+            public const string GetAll = _base;
+            public const string Update = _base;
+            public const string Create = _base;
             public const string Delete = "{id}";
         }
     }

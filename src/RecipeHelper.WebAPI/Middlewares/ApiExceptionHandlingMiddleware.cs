@@ -21,6 +21,11 @@ namespace RecipeHelper.WebAPI.Middlewares
             {
                 await _next(context);
             }
+            catch (ApiException apiEx)
+            {
+                _logger.LogError($"A new violation exception has been thrown {apiEx}");
+                await HandleExceptionsAsync(context, apiEx);
+            }
             catch (AccessViolationException avEx)
             {
                 _logger.LogError($"A new violation exception has been thrown {avEx}");
@@ -53,6 +58,7 @@ namespace RecipeHelper.WebAPI.Middlewares
 
             var message = exception switch
             {
+                ApiException => $"'Api Exception Error' from the custom middleware. {exception.Message}",
                 AccessViolationException => $"'Access Violation Error' from the custom middleware. {exception.Message}",
                 ApplicationUserViolationException => $"'Application User Violation' from the custom middleware. {exception.Message}",
                 ApplicationRoleViolationException => $"'Role violation error' from the custom middleware. {exception.Message}",

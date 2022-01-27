@@ -3,8 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RecipeHelper.Application.Common.Contracts.Persistance;
 using RecipeHelper.Persistance.Data.Context;
+using RecipeHelper.Persistance.Data.Repositories;
 using RecipeHelper.Persistance.Data.Repositories.Base;
-using RecipeHelper.Persistance.Data.Repositories.Recipes;
 
 namespace RecipeHelper.Persistance.Data.Container
 {
@@ -25,9 +25,10 @@ namespace RecipeHelper.Persistance.Data.Container
                         b => b.MigrationsAssembly(typeof(RecipeHelperDbContext).Assembly.FullName)));
             }
             
-            services.AddScoped(typeof(IAsyncCommandRepository<>), typeof(BaseCommandRepository<>));
-            services.AddScoped(typeof(IAsyncReadRepository<>), typeof(BaseReadRepository<>));
-            services.AddScoped<IRecipeReadRepository, RecipeReadRepository>();
+            services.AddTransient(typeof(IAsyncRepository<,>), typeof(BaseRepository<,>));
+            services.AddTransient<IRecipeRepository, RecipeRepository>();
+            services.AddTransient<IIngredientRepository, IngredientRepository>();
+
             return services;
         }
     }

@@ -11,11 +11,11 @@ namespace RecipeHelper.WebAPI.Controllers.v1
 
         }
 
-        [HttpGet("/version")]
-        public async Task<IActionResult> GetApiVersion()
-        {
-            return Ok();
-        }
+        //[HttpGet("/version")]
+        //public async Task<IActionResult> GetApiVersion()
+        //{
+        //    return Ok();
+        //}
 
         [HttpGet("/ping")]
         public async Task<IActionResult> Ping()

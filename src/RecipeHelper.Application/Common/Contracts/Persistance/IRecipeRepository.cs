@@ -2,7 +2,7 @@
 
 namespace RecipeHelper.Application.Common.Contracts.Persistance
 {
-    public interface IRecipeReadRepository : IAsyncReadRepository<Recipe>
+    public interface IRecipeRepository : IAsyncRepository<Recipe, Guid>
     {
     }
 }
