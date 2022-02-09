@@ -6,6 +6,7 @@ namespace RecipeHelper.Domain.Entities
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
-        public virtual ICollection<Recipe>? Recipes { get; set; }
+
+        public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }   
     }
 }

@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using RecipeHelper.Application.Common.Contracts;
-using RecipeHelper.Application.Common.Contracts.Persistance;
+using RecipeHelper.Application.Common.Contracts.Interfaces;
+using RecipeHelper.Application.Common.Contracts.Interfaces.Persistance;
+using RecipeHelper.Application.Common.Dtos;
 using RecipeHelper.Application.Common.Responses;
 using RecipeHelper.Application.Features.Ingredients.Commands.Update;
 using RecipeHelper.Application.Features.Ingredients.Validators;
@@ -27,26 +28,21 @@ namespace RecipeHelper.Application.Features.Ingredients.Commands.Create
         }
         public async Task<Response<IngredientDto>> Handle(UpdateIngredientCommand request, CancellationToken cancellationToken)
         {
-            //var validator = new UpdateIngredientValidator(_repository);
-
-            //var result = await validator.ValidateAsync(request, cancellationToken);
-
-            //if (result.Errors.Count > 0)
-            //    return Response<IngredientDto>.Fail("Validation didnt pass.", JsonSerializer.Serialize(result.Errors).Split(",").ToList());
-
             var ingredient = await _repository.GetByIdAsync(request.Id);
 
             if (ingredient == null)
                 return Response<IngredientDto>.Fail("Ingredient is null");
 
+            var userName = _userService.GetUser()?.Identity?.Name?.ToString();
+
             try
-            {   
+            {
                 ingredient.Name = request.Name;
-                ingredient.LastmodifiedBy = _userService.GetUser()?.ToString() ?? "God";
+                ingredient.LastmodifiedBy = userName ?? "God";
                 ingredient.LastModifiedDate = DateTime.UtcNow;
 
                 await _repository.UpdateAync(ingredient);
-                _logger.LogInformation($"New ingredient: {request.Name} Created by {_userService.GetUser()?.ToString()}");
+                _logger.LogInformation($"New ingredient: {request.Name} Created by {userName}");
             }
             catch (Exception ex)
             {
@@ -54,7 +50,7 @@ namespace RecipeHelper.Application.Features.Ingredients.Commands.Create
                 throw;
             }
 
-            return Response<IngredientDto>.Success("New ingredient created");
+            return Response<IngredientDto>.Success($"New ingredient created by {userName ?? "God"}.");
 
         }
     }

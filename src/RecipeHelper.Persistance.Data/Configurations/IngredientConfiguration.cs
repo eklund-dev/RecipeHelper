@@ -10,8 +10,14 @@ namespace RecipeHelper.Persistance.Data.Configurations
         {
             builder.ToTable("Ingredient");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Name).IsRequired().HasMaxLength(30);
-            builder.HasMany(x => x.Recipes).WithMany(x => x.Ingredients);
+            builder.Property(x => x.Name)
+                .IsRequired()
+                .HasColumnType("nvarchar")
+                .HasMaxLength(30);
+
+            builder.HasMany(x => x.RecipeIngredients)
+                .WithOne(x => x.Ingredient)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasData(Seed());
         }

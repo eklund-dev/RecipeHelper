@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
-using RecipeHelper.Application.Common.Contracts.Persistance;
+using RecipeHelper.Application.Common.Contracts.Interfaces.Persistance;
+using RecipeHelper.Application.Common.Dtos;
 using RecipeHelper.Application.Common.Responses;
 using RecipeHelper.Domain.Entities;
 

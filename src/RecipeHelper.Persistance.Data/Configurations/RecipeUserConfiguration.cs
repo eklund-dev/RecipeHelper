@@ -10,8 +10,10 @@ namespace RecipeHelper.Persistance.Data.Configurations
         {
             builder.ToTable("RecipeUser");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Name).IsRequired().HasMaxLength(30);
-            builder.HasMany(user => user.FavoriteRecipes).WithOne(x => x.RecipeUser);
+            builder.Property(x => x.Name)
+                .IsRequired()
+                .HasColumnType("nvarchar")
+                .HasMaxLength(30);
         }     
     }
 }

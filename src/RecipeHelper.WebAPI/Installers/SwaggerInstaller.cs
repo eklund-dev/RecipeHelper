@@ -1,5 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
-using RecipeHelper.Application.Common.Contracts;
+using RecipeHelper.Application.Common.Contracts.Interfaces;
 using System.Reflection;
 
 namespace RecipeHelper.WebAPI.Installers

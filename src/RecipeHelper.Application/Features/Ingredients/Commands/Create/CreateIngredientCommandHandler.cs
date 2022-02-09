@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using RecipeHelper.Application.Common.Contracts;
-using RecipeHelper.Application.Common.Contracts.Persistance;
+using RecipeHelper.Application.Common.Contracts.Interfaces;
+using RecipeHelper.Application.Common.Contracts.Interfaces.Persistance;
+using RecipeHelper.Application.Common.Dtos;
 using RecipeHelper.Application.Common.Responses;
-using RecipeHelper.Application.Features.Ingredients.Validators;
 using RecipeHelper.Domain.Entities;
-using System.Text.Json;
+using RecipeHelper.Domain.Exceptions;
 
 namespace RecipeHelper.Application.Features.Ingredients.Commands.Create
 {
@@ -29,33 +29,28 @@ namespace RecipeHelper.Application.Features.Ingredients.Commands.Create
         }
         public async Task<Response<IngredientDto>> Handle(CreateIngredientCommand request, CancellationToken cancellationToken)
         {
-            //    var validator = new CreateIngredientValidator(_repository);
-
-            //    var result = await validator.ValidateAsync(request, cancellationToken);
-
-            //    if (result.Errors.Count > 0)
-            //        return Response<IngredientDto>.Fail("Validation didnt pass.", JsonSerializer.Serialize(result.Errors).Split(",").ToList());
+            var userName = _userService.GetClaimsUserName();
 
             var newIngredient = new Ingredient
             {
                 Id = Guid.NewGuid(),
                 Name = request.Name,
-                CreatedBy = _userService.GetUser()?.ToString() ?? "Anonymous",
+                CreatedBy = userName,
                 CreatedDate = DateTime.UtcNow
             };
 
             try
             {
                 await _repository.AddAsync(newIngredient);
-                _logger.LogInformation($"New ingredient: {newIngredient.Name} Created by {_userService.GetUser()?.ToString()}");
+                _logger.LogInformation($"New ingredient: {newIngredient.Name} Created by {userName}.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw;
+                throw new ApiException($"Exception thrown in {nameof(CreateIngredientCommandHandler)}", ex.Message);
             }
 
-            return Response<IngredientDto>.Success("New ingredient created");
+            return Response<IngredientDto>.Success($"New ingredient: {newIngredient.Name} created by {userName}.");
 
         }
     }

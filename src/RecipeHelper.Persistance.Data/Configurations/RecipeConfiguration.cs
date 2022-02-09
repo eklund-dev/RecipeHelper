@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
 using RecipeHelper.Domain.Entities;
-using RecipeHelper.Domain.Enum;
 
 namespace RecipeHelper.Persistance.Data.Configurations
 {
@@ -12,37 +12,29 @@ namespace RecipeHelper.Persistance.Data.Configurations
             builder.ToTable("Recipe");
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Name).IsRequired().HasMaxLength(50);
-            builder.Property(x => x.Difficulty).IsRequired();
+            builder.Property(x => x.Name)
+                .IsRequired()
+                .HasColumnType("nvarchar")
+                .HasMaxLength(50);
+
             builder.Property(x => x.Description).HasMaxLength(300);
+            builder.Property(x => x.Duration).IsRequired();
 
-            builder.HasOne(x => x.RecipeFoodType)
+            builder.Property(x => x.Difficulty).IsRequired();
+            builder.Property(x => x.TypeOfMeal).IsRequired();
+            builder.Property(x => x.TypeOfOccasion).IsRequired();
+
+            builder.Property(x => x.Instructions)
+                .IsRequired()
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<string>>(v));
+
+            builder.Property(x => x.FoodTypeId).IsRequired();
+            builder.HasOne(x => x.FoodType)
                 .WithMany(x => x.Recipes)
-                .HasForeignKey(x => x.RecipeFoodTypeId)
+                .HasForeignKey(x => x.FoodTypeId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(x => x.CourseCategory)
-                .WithMany(x => x.Recipes)
-                .HasForeignKey(x => x.RecipeFoodTypeId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasData(SeedData());
-        }
-
-        private static Recipe[] SeedData()
-        {
-            return new[]
-            {
-                new Recipe
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Kyckling ris & Curry",
-                    Description = "n/a",
-                    Difficulty = Difficulty.Easy,
-                    CreatedBy = "Seed",
-                    CreatedDate = DateTime.UtcNow,
-                }
-            };
         }
     }
 }

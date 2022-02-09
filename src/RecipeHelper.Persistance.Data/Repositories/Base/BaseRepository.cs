@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RecipeHelper.Application.Common.Contracts.Persistance;
+using RecipeHelper.Application.Common.Contracts.Interfaces.Persistance;
 using RecipeHelper.Persistance.Data.Context;
 
 namespace RecipeHelper.Persistance.Data.Repositories.Base

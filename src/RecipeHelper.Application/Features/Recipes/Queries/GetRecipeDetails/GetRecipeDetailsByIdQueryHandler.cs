@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
-using RecipeHelper.Application.Common.Contracts.Persistance;
+using Microsoft.EntityFrameworkCore;
+using RecipeHelper.Application.Common.Contracts.Interfaces.Persistance;
+using RecipeHelper.Application.Common.Dtos;
 using RecipeHelper.Application.Common.Responses;
 using RecipeHelper.Domain.Entities;
 
@@ -24,8 +27,17 @@ namespace RecipeHelper.Application.Features.Recipes.Queries.GetRecipeDetails
             if (recipe == null)
                 return Response<RecipeDto>.Fail($"Recipe with id {request.Id} not found");
 
+            var recipeDto = _repository.Entity
+                .Include(x => x.RecipeIngredients)
+                .ProjectTo<RecipeDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefault();
 
-            return Response<RecipeDto>.Success(_mapper.Map<RecipeDto>(recipe), "Recipe fetched");
+            if (recipeDto == null)
+            {
+                return Response<RecipeDto>.Fail("Could not Map Recipe to RecipeDto");
+            }
+
+            return Response<RecipeDto>.Success(recipeDto, "Recipe fetched"); 
 
         }
     }

@@ -13,5 +13,6 @@ namespace RecipeHelper.Application.Common.Validators
         {
             return ruleBuilder.Must(m => m != null && !m.EndsWith(" ")).WithMessage("'{PropertyName}' should not end with whitespace");
         }
+
     }
 }

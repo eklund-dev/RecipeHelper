@@ -17,33 +17,82 @@ namespace RecipeHelper.Persistance.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("IngredientRecipe", b =>
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.Category", b =>
                 {
-                    b.Property<Guid>("IngredientsId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RecipesId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("IngredientsId", "RecipesId");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
-                    b.HasIndex("RecipesId");
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
 
-                    b.ToTable("IngredientRecipe");
+                    b.Property<string>("LastmodifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Category", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("e4c56d33-d043-4730-84f5-0d609bdb2a57"),
+                            CreatedBy = "Seed",
+                            CreatedDate = new DateTime(2022, 2, 9, 15, 24, 52, 537, DateTimeKind.Utc).AddTicks(2871),
+                            Name = "Simple and tasty"
+                        });
                 });
 
-            modelBuilder.Entity("RecipeHelper.Domain.Entities.CourseCategory", b =>
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.FavoriteRecipe", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<Guid>("RecipeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<Guid>("RecipeUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastmodifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RecipeId", "RecipeUserId");
+
+                    b.HasIndex("RecipeUserId");
+
+                    b.ToTable("FavoriteRecipe", (string)null);
+                });
+
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.FoodType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -65,40 +114,44 @@ namespace RecipeHelper.Persistance.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CourseCategory", (string)null);
-                });
+                    b.ToTable("FoodType", (string)null);
 
-            modelBuilder.Entity("RecipeHelper.Domain.Entities.FavoriteRecipe", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("LastModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastmodifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("RecipeUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RecipeUserId");
-
-                    b.ToTable("FavoriteRecipe");
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a7d82206-0e6d-4c17-a100-fd7278809dc5"),
+                            CreatedBy = "Seed",
+                            CreatedDate = new DateTime(2022, 2, 9, 15, 24, 52, 538, DateTimeKind.Utc).AddTicks(2019),
+                            Name = "Meat"
+                        },
+                        new
+                        {
+                            Id = new Guid("3827d999-4ba4-433d-9b34-153e34c6a8f0"),
+                            CreatedBy = "Seed",
+                            CreatedDate = new DateTime(2022, 2, 9, 15, 24, 52, 538, DateTimeKind.Utc).AddTicks(2023),
+                            Name = "Fish"
+                        },
+                        new
+                        {
+                            Id = new Guid("b94d7db2-bc89-412a-8706-9e72d32015c2"),
+                            CreatedBy = "Seed",
+                            CreatedDate = new DateTime(2022, 2, 9, 15, 24, 52, 538, DateTimeKind.Utc).AddTicks(2034),
+                            Name = "Chicken"
+                        },
+                        new
+                        {
+                            Id = new Guid("d4fb7ac1-c3d6-48b0-8b5c-dc78635d3402"),
+                            CreatedBy = "Seed",
+                            CreatedDate = new DateTime(2022, 2, 9, 15, 24, 52, 538, DateTimeKind.Utc).AddTicks(2036),
+                            Name = "Vegatarian"
+                        },
+                        new
+                        {
+                            Id = new Guid("0d5440dc-cf1e-418c-a530-d20b23a4eb3f"),
+                            CreatedBy = "Seed",
+                            CreatedDate = new DateTime(2022, 2, 9, 15, 24, 52, 538, DateTimeKind.Utc).AddTicks(2037),
+                            Name = "Vegan"
+                        });
                 });
 
             modelBuilder.Entity("RecipeHelper.Domain.Entities.Ingredient", b =>
@@ -132,16 +185,16 @@ namespace RecipeHelper.Persistance.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("852395a4-3aa4-4cdc-91cd-f0ce6340835e"),
+                            Id = new Guid("01196137-b6fa-4cc4-aecb-41c007f484ab"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 1, 4, 15, 11, 8, 365, DateTimeKind.Utc).AddTicks(3849),
+                            CreatedDate = new DateTime(2022, 2, 9, 15, 24, 52, 538, DateTimeKind.Utc).AddTicks(3300),
                             Name = "Salt"
                         },
                         new
                         {
-                            Id = new Guid("defd89d7-65fd-4aaa-932a-06da9661bdee"),
+                            Id = new Guid("ac4f8e98-0b03-4494-ba42-41693953ba15"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 1, 4, 15, 11, 8, 365, DateTimeKind.Utc).AddTicks(3853),
+                            CreatedDate = new DateTime(2022, 2, 9, 15, 24, 52, 538, DateTimeKind.Utc).AddTicks(3302),
                             Name = "Peppar"
                         });
                 });
@@ -151,9 +204,6 @@ namespace RecipeHelper.Persistance.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("CourseCategoryId")
-                        .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -169,8 +219,16 @@ namespace RecipeHelper.Persistance.Data.Migrations
                     b.Property<int>("Difficulty")
                         .HasColumnType("int");
 
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("time");
+
+                    b.Property<Guid?>("FoodTypeId")
+                        .IsRequired()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Instructions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModifiedDate")
                         .HasColumnType("datetime2");
@@ -183,61 +241,59 @@ namespace RecipeHelper.Persistance.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Occasion")
+                    b.Property<int>("TypeOfMeal")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RecipeFoodTypeId")
+                    b.Property<int>("TypeOfOccasion")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RecipeFoodTypeId");
+                    b.HasIndex("FoodTypeId");
 
                     b.ToTable("Recipe", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("318c01ed-3f7a-4b21-9934-ce793d536673"),
-                            CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 1, 4, 15, 11, 8, 365, DateTimeKind.Utc).AddTicks(8916),
-                            Description = "n/a",
-                            Difficulty = 1,
-                            Duration = 0,
-                            Name = "Kyckling ris & Curry",
-                            Occasion = 0
-                        });
                 });
 
-            modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeFoodType", b =>
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeCategory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("RecipeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("RecipeId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("RecipeCategory", (string)null);
+                });
+
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeIngredient", b =>
+                {
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("IngredientAmountBase")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("IngredientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("NumberOfPortionsBase")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("LastModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastmodifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<Guid>("RecipeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.ToTable("RecipeFoodType", (string)null);
+                    b.HasIndex("IngredientId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.ToTable("RecipeIngredient", (string)null);
                 });
 
             modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeUser", b =>
@@ -246,15 +302,15 @@ namespace RecipeHelper.Persistance.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<Guid>("IdentityId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("LastModifiedDate")
                         .HasColumnType("datetime2");
@@ -272,57 +328,96 @@ namespace RecipeHelper.Persistance.Data.Migrations
                     b.ToTable("RecipeUser", (string)null);
                 });
 
-            modelBuilder.Entity("IngredientRecipe", b =>
-                {
-                    b.HasOne("RecipeHelper.Domain.Entities.Ingredient", null)
-                        .WithMany()
-                        .HasForeignKey("IngredientsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RecipeHelper.Domain.Entities.Recipe", null)
-                        .WithMany()
-                        .HasForeignKey("RecipesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("RecipeHelper.Domain.Entities.FavoriteRecipe", b =>
                 {
+                    b.HasOne("RecipeHelper.Domain.Entities.Recipe", "Recipe")
+                        .WithMany("FavoriteRecipes")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("RecipeHelper.Domain.Entities.RecipeUser", "RecipeUser")
                         .WithMany("FavoriteRecipes")
                         .HasForeignKey("RecipeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Recipe");
+
                     b.Navigation("RecipeUser");
                 });
 
             modelBuilder.Entity("RecipeHelper.Domain.Entities.Recipe", b =>
                 {
-                    b.HasOne("RecipeHelper.Domain.Entities.CourseCategory", "CourseCategory")
+                    b.HasOne("RecipeHelper.Domain.Entities.FoodType", "FoodType")
                         .WithMany("Recipes")
-                        .HasForeignKey("RecipeFoodTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("FoodTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("RecipeHelper.Domain.Entities.RecipeFoodType", "RecipeFoodType")
-                        .WithMany("Recipes")
-                        .HasForeignKey("RecipeFoodTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("CourseCategory");
-
-                    b.Navigation("RecipeFoodType");
+                    b.Navigation("FoodType");
                 });
 
-            modelBuilder.Entity("RecipeHelper.Domain.Entities.CourseCategory", b =>
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeCategory", b =>
+                {
+                    b.HasOne("RecipeHelper.Domain.Entities.Category", "Category")
+                        .WithMany("RecipeCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeHelper.Domain.Entities.Recipe", "Recipe")
+                        .WithMany("RecipeCategories")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Recipe");
+                });
+
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeIngredient", b =>
+                {
+                    b.HasOne("RecipeHelper.Domain.Entities.Ingredient", "Ingredient")
+                        .WithMany("RecipeIngredients")
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeHelper.Domain.Entities.Recipe", "Recipe")
+                        .WithMany("RecipeIngredients")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
+
+                    b.Navigation("Recipe");
+                });
+
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.Category", b =>
+                {
+                    b.Navigation("RecipeCategories");
+                });
+
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.FoodType", b =>
                 {
                     b.Navigation("Recipes");
                 });
 
-            modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeFoodType", b =>
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.Ingredient", b =>
                 {
-                    b.Navigation("Recipes");
+                    b.Navigation("RecipeIngredients");
+                });
+
+            modelBuilder.Entity("RecipeHelper.Domain.Entities.Recipe", b =>
+                {
+                    b.Navigation("FavoriteRecipes");
+
+                    b.Navigation("RecipeCategories");
+
+                    b.Navigation("RecipeIngredients");
                 });
 
             modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeUser", b =>

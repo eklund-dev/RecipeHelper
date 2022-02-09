@@ -8,12 +8,13 @@ using RecipeHelper.Application.Common.QueryParameters;
 using RecipeHelper.Application.Common.Requests.Roles;
 using RecipeHelper.Application.Common.Requests.Users;
 using RecipeHelper.Application.Common.Responses;
+using RecipeHelper.WebAPI.Helpers;
 using RecipeHelper.WebAPI.Routes.v1;
 
 namespace RecipeHelper.WebAPI.Controllers.v1
 {
     [Route("")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -45,7 +46,7 @@ namespace RecipeHelper.WebAPI.Controllers.v1
 
         [HttpGet(ApiRoutes.Identity.GetAllUsers)]
         [ProducesResponseType(typeof(Response<PaginatedList<ApplicationUserDto>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetUsersAsync([FromQuery] ApplicationUserQueryParameters parameters)
+        public async Task<IActionResult> GetUsersAsync([FromQuery] QueryParameters parameters)
         {
             var response = await _identityUserService.GetPaginatedUsersAsync(parameters.PageNumber, parameters.PageSize);
 
@@ -60,8 +61,8 @@ namespace RecipeHelper.WebAPI.Controllers.v1
         {
             var response = await _identityUserService.CreateUserAsync(request);
 
-            return response.Succeeded ? 
-                Ok(response) : 
+            return response.Succeeded ?
+                Created(GetLocationUriHelper.GetLocationUri(HttpContext, ApiRoutes.Identity.GetUser, "{id}", response.Data.Id.ToString()), response) :
                 BadRequest(response);
         }
         
@@ -100,7 +101,7 @@ namespace RecipeHelper.WebAPI.Controllers.v1
 
         [HttpGet(ApiRoutes.Identity.GetAllRoles)]
         [ProducesResponseType(typeof(Response<ApplicationRoleDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetRolesAsync([FromQuery] ApplicationRoleQueryParameters parameters)
+        public async Task<IActionResult> GetRolesAsync([FromQuery] QueryParameters parameters)
         {
             var roleListResponse = await _identityRoleService.GetAllAsync(parameters.PageNumber, parameters.PageSize);
 

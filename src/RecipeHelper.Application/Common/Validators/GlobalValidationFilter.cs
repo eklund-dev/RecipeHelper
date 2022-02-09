@@ -31,8 +31,8 @@ namespace RecipeHelper.Application.Common.Validators
 
                 context.Result = new BadRequestObjectResult(
                     Response<GlobalFilterError>.Fail(
-                        "Error from validtion filter", 
-                        JsonSerializer.Serialize(errorModel).Split(',').ToList()));
+                        "Error from validtaion filter", 
+                        JsonSerializer.Serialize(errorModel.Errors).Split(',').ToList()));
             }
 
             //After Controller is done

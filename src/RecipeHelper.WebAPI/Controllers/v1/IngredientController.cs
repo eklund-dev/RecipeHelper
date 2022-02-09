@@ -2,20 +2,21 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RecipeHelper.Application.Common.Dtos;
+using RecipeHelper.Application.Common.QueryParameters;
 using RecipeHelper.Application.Common.Responses;
-using RecipeHelper.Application.Features.Ingredients;
 using RecipeHelper.Application.Features.Ingredients.Commands.Create;
 using RecipeHelper.Application.Features.Ingredients.Commands.Delete;
 using RecipeHelper.Application.Features.Ingredients.Commands.Update;
 using RecipeHelper.Application.Features.Ingredients.Queries.GetIngredientDetails;
 using RecipeHelper.Application.Features.Ingredients.Queries.GetIngredientList;
-using RecipeHelper.Domain.Exceptions;
+using RecipeHelper.WebAPI.Helpers;
 using RecipeHelper.WebAPI.Routes.v1;
 
 namespace RecipeHelper.WebAPI.Controllers.v1
 {
     [Route("")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -33,25 +34,18 @@ namespace RecipeHelper.WebAPI.Controllers.v1
         [ProducesResponseType(typeof(Response<IngredientDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid id)
         {
-            try
-            {
-                var response = await _mediator.Send(new GetIngredientDetailsByIdQuery { Id = id });
+            var response = await _mediator.Send(new GetIngredientDetailsByIdQuery { Id = id });
 
-                return response.Succeeded ?
-                    Ok(response) :
-                    BadRequest(response);
-            }
-            catch (Exception ex)
-            {
-                throw new ApiException(ex.Message);
-            }
+            return response.Succeeded ?
+                Ok(response) :
+                BadRequest(response);
         }
 
         [HttpGet(ApiRoutes.Ingredient.GetAll)]
         [ProducesResponseType(typeof(Response<PaginatedList<IngredientDto>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllAsync([FromQuery] IngredientQueryParameters parameters)
+        public async Task<IActionResult> GetAllAsync([FromQuery] QueryParameters parameters)
         {
-            var response = await _mediator.Send(new GetIngredientListQuery { QueryParameters = parameters });
+            var response = await _mediator.Send(new GetCategoryListQuery { QueryParameters = parameters });
 
             return response.Succeeded ?
                 Ok(response) :
@@ -65,6 +59,7 @@ namespace RecipeHelper.WebAPI.Controllers.v1
             var response = await _mediator.Send(command);
 
             return response.Succeeded ?
+                //Created(GetLocationUriHelper.GetLocationUri(HttpContext, ApiRoutes.Ingredient.Get, "{id}", response.Data.Id.ToString()), response) :
                 Ok(response) :
                 BadRequest(response);
         }
@@ -84,19 +79,11 @@ namespace RecipeHelper.WebAPI.Controllers.v1
         [ProducesResponseType(typeof(Response<IngredientDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            try
-            {
-                var response = await _mediator.Send(new DeleteIngredientCommand { Id = id });
+            var response = await _mediator.Send(new DeleteIngredientCommand { Id = id });
 
-                return response.Succeeded ?
-                    Ok(response) :
-                    BadRequest(response);
-            }
-            catch (Exception ex)
-            {
-                throw new ApiException(ex.Message);
-            }
-        
+            return response.Succeeded ?
+                Ok(response) :
+                BadRequest(response);
         }
     }
 }

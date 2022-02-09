@@ -1,8 +1,8 @@
 ﻿using FluentValidation.AspNetCore;
 using Newtonsoft.Json.Serialization;
-using RecipeHelper.Application.Common.Contracts;
+using RecipeHelper.Application.Common.Contracts.Interfaces;
 using RecipeHelper.Application.Common.Validators;
-using RecipeHelper.Application.Common.Validators.Auth;
+using RecipeHelper.Application.Features.Ingredients.Validators;
 
 namespace RecipeHelper.WebAPI.Installers
 {
@@ -24,7 +24,7 @@ namespace RecipeHelper.WebAPI.Installers
             })
             .AddFluentValidation(fvc =>
             {
-                fvc.RegisterValidatorsFromAssemblyContaining<AuthRequestValidator>();
+                fvc.RegisterValidatorsFromAssemblyContaining<CreateIngredientValidator>();
             });
 
             services.AddAuthorization(options =>

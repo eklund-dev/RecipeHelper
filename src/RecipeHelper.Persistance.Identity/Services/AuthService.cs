@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using RecipeHelper.Application.Common.Contracts;
+using RecipeHelper.Application.Common.Contracts.Interfaces;
 using RecipeHelper.Application.Common.Contracts.Interfaces.Auth;
 using RecipeHelper.Application.Common.Dtos.Identity;
 using RecipeHelper.Application.Common.Requests.Auth;
@@ -45,11 +45,13 @@ namespace RecipeHelper.Persistance.Identity.Services
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
-            if (user is null) return Response<AuthDto>.Fail("User does not exist");
+            if (user is null) 
+                return Response<AuthDto>.Fail("User does not exist");
          
             var userHasValidPassword = await _userManager.CheckPasswordAsync(user, request.Password);
 
-            if (userHasValidPassword is false) return Response<AuthDto>.Fail("User/password combination is incorrect");
+            if (userHasValidPassword is false) 
+                return Response<AuthDto>.Fail("User/password combination is incorrect");
 
             _logger.LogInformation($"Successful login for user with id {user.Id}", user);
 

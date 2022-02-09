@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using RecipeHelper.Application.Features.Ingredients;
+using RecipeHelper.Application.Common.Dtos;
 using RecipeHelper.Domain.Entities;
 
 namespace RecipeHelper.Application.Common.Profiles
@@ -8,7 +8,7 @@ namespace RecipeHelper.Application.Common.Profiles
     {
         public IngredientProfile()
         {
-            CreateMap<Ingredient, IngredientDto>();
+            CreateMap<Ingredient, IngredientDto>().ReverseMap();
         }
     }
 }

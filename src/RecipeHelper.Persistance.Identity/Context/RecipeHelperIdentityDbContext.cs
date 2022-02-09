@@ -16,6 +16,7 @@ namespace RecipeHelper.Persistance.Identity.Context
         {
             base.OnModelCreating(builder);
 
+            // Refaktorera denna till en ConfigurationFil
             builder.Entity<ApplicationUserRole>(userRole =>
             {
                 userRole.HasKey(ur => new { ur.UserId, ur.RoleId });

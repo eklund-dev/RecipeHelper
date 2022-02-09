@@ -6,7 +6,7 @@ namespace RecipeHelper.Domain.Entities
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
-        public Guid IdentityId { get; set; }
+        public Guid ApplicationUserId { get; set; }
         public virtual ICollection<FavoriteRecipe>? FavoriteRecipes { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace RecipeHelper.WebAPI.Controllers.v1
 {
-    [Route("api")]
+    [Route("api/data")]
     [ApiController]
     public class ApiDataController : ControllerBase
     {
@@ -18,9 +18,9 @@ namespace RecipeHelper.WebAPI.Controllers.v1
         //}
 
         [HttpGet("/ping")]
-        public async Task<IActionResult> Ping()
+        public IActionResult Ping()
         {
-            return Ok("Ping Pong Ping Pong");
+            return Ok("Pong");
         }
     }
 }

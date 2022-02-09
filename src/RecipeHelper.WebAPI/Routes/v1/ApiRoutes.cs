@@ -2,7 +2,7 @@
 {
     public static class ApiRoutes
     {
-        private const string ApiVersion1 = "recipeApi/v1/";
+        private const string ApiVersion1 = "api/v1/";
 
         public class Auth
         {
@@ -49,7 +49,29 @@
             public const string GetAll = _base;
             public const string Update = _base;
             public const string Create = _base;
-            public const string Delete = "{id}";
+            public const string Delete = _base + "{id}";
+        }
+
+        public class Category
+        {
+            private const string _base = ApiVersion1 + "category/";
+
+            public const string Get = _base + "{id}";
+            public const string GetAll = _base;
+            public const string Update = _base;
+            public const string Create = _base;
+            public const string Delete = _base+ "{id}";
+        }
+
+        public class RecipeUser
+        {
+            private const string _base = ApiVersion1 + "recipeUser/";
+
+            public const string Get = _base + "{id}";
+            public const string GetAll = _base;
+            public const string Update = _base;
+            public const string Create = _base;
+            public const string Delete = _base + "{id}";
         }
     }
 }

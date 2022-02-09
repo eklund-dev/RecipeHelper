@@ -46,8 +46,8 @@ namespace RecipeHelper.Persistance.Identity.Container
             });
 
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IIdentityUserService, IdentityUserService>();
-            services.AddScoped<IIdentityRoleService, IdentityRoleService>();
+            services.AddScoped<IIdentityUserService, ApplicationUserService>();
+            services.AddScoped<IIdentityRoleService, ApplicationRoleService>();
         }
     }
 }

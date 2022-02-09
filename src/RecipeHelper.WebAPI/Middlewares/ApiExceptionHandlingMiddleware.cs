@@ -31,16 +31,6 @@ namespace RecipeHelper.WebAPI.Middlewares
                 _logger.LogError($"A new violation exception has been thrown {avEx}");
                 await HandleExceptionsAsync(context, avEx);
             }
-            catch (ApplicationUserViolationException appUserEx)
-            {
-                _logger.LogError($"A new violation exception has been thrown {appUserEx}");
-                await HandleExceptionsAsync(context, appUserEx);
-            }
-            catch (ApplicationRoleViolationException roleEx)
-            {
-                _logger.LogError($"A new violation exception has been thrown {roleEx}");
-                await HandleExceptionsAsync(context, roleEx);
-            }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong: {ex}");
@@ -53,15 +43,10 @@ namespace RecipeHelper.WebAPI.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            // Bara att addera nya exeptions här. Försök att endast använda det inbyggda exceptions som finns - kommer långt med dem. 
-            // Exceptions bör endast skapas vid oväntaden händelser - det är dyrt att throwa exceptions.
-
             var message = exception switch
             {
                 ApiException => $"'Api Exception Error' from the custom middleware. {exception.Message}",
                 AccessViolationException => $"'Access Violation Error' from the custom middleware. {exception.Message}",
-                ApplicationUserViolationException => $"'Application User Violation' from the custom middleware. {exception.Message}",
-                ApplicationRoleViolationException => $"'Role violation error' from the custom middleware. {exception.Message}",
                 _ => $"Internal Server Error from the custom middleware. {exception.Message}"
             };
 
