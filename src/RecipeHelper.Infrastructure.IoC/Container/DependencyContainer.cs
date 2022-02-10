@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RecipeHelper.Application.Common.Contracts;
+using RecipeHelper.Application.Common.Contracts.Interfaces;
 using RecipeHelper.Application.Common.Services;
 using RecipeHelper.Persistance.Data.Container;
-using RecipeHelper.Persistance.Identity.Containers;
+using RecipeHelper.Persistance.Identity.Container;
 
 namespace RecipeHelper.Infrastructure.IoC.Container
 {
@@ -21,6 +21,8 @@ namespace RecipeHelper.Infrastructure.IoC.Container
             services.AddJwtServices(configuration);
 
             services.AddPersistanceServices(configuration);
+
+            services.AddApplicationServices(configuration);
         }
     }
 }

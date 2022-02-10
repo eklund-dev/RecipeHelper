@@ -1,4 +1,4 @@
-﻿using RecipeHelper.Application.Common.Contracts;
+﻿using RecipeHelper.Application.Common.Contracts.Interfaces;
 
 namespace RecipeHelper.WebAPI.Installers
 {

@@ -8,6 +8,7 @@ namespace RecipeHelper.Persistance.Identity.Models
         public string? LastName { get; set; }
         public bool? IsActive { get; set; }
 
+        public ICollection<ApplicationUserRole>? UserRoles { get; set; }
         public string GetFullName() => $"{FirstName} {LastName}";
     }
 }

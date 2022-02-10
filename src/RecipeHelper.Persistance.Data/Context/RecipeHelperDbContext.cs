@@ -8,12 +8,17 @@ namespace RecipeHelper.Persistance.Data.Context
     {
         public RecipeHelperDbContext(DbContextOptions<RecipeHelperDbContext> options)
             : base(options)
-        { }
+        {
+        }
 
-        public DbSet<Recipe> Recipes { get; set; }
-        public DbSet<Ingredient> Ingredients { get; set; }
-
-        public DbSet<RecipeUser> RecipeUsers { get; set; }
+        public DbSet<Recipe>? Recipes { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Ingredient>? Ingredients { get; set; }
+        public DbSet<RecipeUser>? RecipeUsers { get; set; }
+        public DbSet<FoodType>? FoodTypes { get; set; }     
+        public DbSet<FavoriteRecipe>? FavoriteRecipes { get; set; }
+        public DbSet<RecipeCategory> RecipeCategories { get; set; }
+        public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

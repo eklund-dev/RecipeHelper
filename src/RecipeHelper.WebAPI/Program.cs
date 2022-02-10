@@ -1,5 +1,6 @@
 using RecipeHelper.Infrastructure.IoC;
 using RecipeHelper.Infrastructure.IoC.Container;
+using RecipeHelper.WebAPI.Extensions;
 using RecipeHelper.WebAPI.Installers;
 using Serilog;
 
@@ -27,9 +28,10 @@ var app = await builder
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "RecipeHelper.WebAPI v1"));
+    app.UseSwaggerExtensisons();
 }
+
+app.UserErrorHandlingMiddleware();
 
 app.UseHttpsRedirection();
 app.UseRouting();

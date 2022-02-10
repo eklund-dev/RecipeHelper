@@ -1,6 +1,8 @@
 ﻿using FluentValidation.AspNetCore;
 using Newtonsoft.Json.Serialization;
-using RecipeHelper.Application.Common.Contracts;
+using RecipeHelper.Application.Common.Contracts.Interfaces;
+using RecipeHelper.Application.Common.Validators;
+using RecipeHelper.Application.Features.Ingredients.Validators;
 
 namespace RecipeHelper.WebAPI.Installers
 {
@@ -18,12 +20,17 @@ namespace RecipeHelper.WebAPI.Installers
             services.AddMvcCore(options =>
             {
                 options.EnableEndpointRouting = false;
-                //options.Filters.Add(new ControllerValidationFilter());
+                options.Filters.Add(new GlobalValidationFilter());
             })
-            .AddFluentValidation(mvcConfig =>
-             mvcConfig.RegisterValidatorsFromAssemblyContaining<Program>());
+            .AddFluentValidation(fvc =>
+            {
+                fvc.RegisterValidatorsFromAssemblyContaining<CreateIngredientValidator>();
+            });
 
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Administrator", builder => builder.RequireClaim("admin.view", "true"));
+            });
         }
     
     }

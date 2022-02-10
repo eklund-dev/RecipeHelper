@@ -3,6 +3,7 @@
     public enum RoleType
     {
         User,
-        Admin
+        Admin,
+        Owner
     }
 }

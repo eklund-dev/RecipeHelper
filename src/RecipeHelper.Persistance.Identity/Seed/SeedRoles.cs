@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using RecipeHelper.Persistance.Identity.Enums;
+using RecipeHelper.Persistance.Identity.Models;
 
 namespace RecipeHelper.Persistance.Identity.Seed
 {
     public static class SeedRoles
     {
-        public static async Task SeedAsync(RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAsync(RoleManager<ApplicationRole> roleManager)
         {
-            var roleList = new List<IdentityRole>();
+            var roleList = new List<ApplicationRole>();
 
             if (await roleManager.FindByNameAsync(Enum.GetName(typeof(RoleType), RoleType.User)) is null)
             {
-                var userRole = new IdentityRole
+                var userRole = new ApplicationRole
                 {
                     Name = Enum.GetName(typeof(RoleType), RoleType.User)
                 };
@@ -21,7 +22,7 @@ namespace RecipeHelper.Persistance.Identity.Seed
 
             if (await roleManager.FindByNameAsync(Enum.GetName(typeof(RoleType), RoleType.Admin)) is null)
             {
-                var adminRole = new IdentityRole
+                var adminRole = new ApplicationRole
                 {
                     Name = Enum.GetName(typeof(RoleType), RoleType.Admin)
                 };
@@ -29,8 +30,20 @@ namespace RecipeHelper.Persistance.Identity.Seed
                 roleList.Add(adminRole);
             }
 
-            roleList.ForEach(async role => await roleManager.CreateAsync(role));
+            if (await roleManager.FindByNameAsync(Enum.GetName(typeof(RoleType), RoleType.Owner)) is null)
+            {
+                var ownerRole = new ApplicationRole
+                {
+                    Name = Enum.GetName(typeof(RoleType), RoleType.Owner)
+                };
 
+                roleList.Add(ownerRole);
+            }
+
+            foreach (var role in roleList)
+            {
+                _ = await roleManager.CreateAsync(role);
+            }
         }
     }
 }

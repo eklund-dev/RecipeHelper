@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using RecipeHelper.Persistance.Data.Context;
+using RecipeHelper.Persistance.Data.Seeders;
 
 namespace RecipeHelper.Persistance.Data
 {
@@ -19,6 +20,7 @@ namespace RecipeHelper.Persistance.Data
                 try
                 {
                     await recipeHelperContext.Database.MigrateAsync();
+                    await SeedEntities.SeedRecipes(recipeHelperContext);
                     logger.LogInformation("Migrating RecipeHelperContext as an Async Operation");
                 }
                 catch (Exception ex)
