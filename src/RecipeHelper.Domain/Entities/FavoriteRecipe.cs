@@ -2,7 +2,7 @@
 
 namespace RecipeHelper.Domain.Entities
 {
-    public class FavoriteRecipe : AuditableEntity
+    public class FavoriteRecipe
     {
         public Guid RecipeId { get; set; }
         public virtual Recipe Recipe { get; set; }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecipeHelper.Persistance.Data.Context;
 
@@ -11,9 +12,10 @@ using RecipeHelper.Persistance.Data.Context;
 namespace RecipeHelper.Persistance.Data.Migrations
 {
     [DbContext(typeof(RecipeHelperDbContext))]
-    partial class RecipeHelperDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220210163621_Tbl_FavoriteRecipe_Change")]
+    partial class Tbl_FavoriteRecipe_Change
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,9 +55,9 @@ namespace RecipeHelper.Persistance.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c61cccf1-856e-4bc9-ad09-46bfaf481fcf"),
+                            Id = new Guid("009730f0-f81b-4ead-bd32-23e4f5746781"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 2, 11, 13, 0, 47, 272, DateTimeKind.Utc).AddTicks(113),
+                            CreatedDate = new DateTime(2022, 2, 10, 16, 36, 21, 83, DateTimeKind.Utc).AddTicks(4025),
                             Name = "Simple and tasty"
                         });
                 });
@@ -106,37 +108,37 @@ namespace RecipeHelper.Persistance.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("102e0408-dcb2-4fbf-9062-dc89c7442fd3"),
+                            Id = new Guid("1b755e2e-462c-4ed7-9319-6d11346285fe"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 2, 11, 13, 0, 47, 272, DateTimeKind.Utc).AddTicks(4427),
+                            CreatedDate = new DateTime(2022, 2, 10, 16, 36, 21, 83, DateTimeKind.Utc).AddTicks(8063),
                             Name = "Meat"
                         },
                         new
                         {
-                            Id = new Guid("52c7fa23-7745-4111-a5cd-605d687fdb9d"),
+                            Id = new Guid("24f6f5e6-9a03-4510-bfbc-93cdcb135faf"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 2, 11, 13, 0, 47, 272, DateTimeKind.Utc).AddTicks(4431),
+                            CreatedDate = new DateTime(2022, 2, 10, 16, 36, 21, 83, DateTimeKind.Utc).AddTicks(8067),
                             Name = "Fish"
                         },
                         new
                         {
-                            Id = new Guid("a246a5a0-1f68-44ec-8734-f89b33906d2e"),
+                            Id = new Guid("e019b04c-347a-4883-9cfb-e9b7fa960d88"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 2, 11, 13, 0, 47, 272, DateTimeKind.Utc).AddTicks(4432),
+                            CreatedDate = new DateTime(2022, 2, 10, 16, 36, 21, 83, DateTimeKind.Utc).AddTicks(8068),
                             Name = "Chicken"
                         },
                         new
                         {
-                            Id = new Guid("95a5029d-b617-4a91-bf25-65c8a69033ca"),
+                            Id = new Guid("64fe636f-d58b-4c94-bd4c-082cfad86c88"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 2, 11, 13, 0, 47, 272, DateTimeKind.Utc).AddTicks(4434),
+                            CreatedDate = new DateTime(2022, 2, 10, 16, 36, 21, 83, DateTimeKind.Utc).AddTicks(8070),
                             Name = "Vegatarian"
                         },
                         new
                         {
-                            Id = new Guid("e167d240-e2d8-4916-8f62-765987d92702"),
+                            Id = new Guid("cf355479-2469-402d-b4dd-1de243f49244"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 2, 11, 13, 0, 47, 272, DateTimeKind.Utc).AddTicks(4435),
+                            CreatedDate = new DateTime(2022, 2, 10, 16, 36, 21, 83, DateTimeKind.Utc).AddTicks(8071),
                             Name = "Vegan"
                         });
                 });
@@ -172,16 +174,16 @@ namespace RecipeHelper.Persistance.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5cef7167-95bd-4891-9dfa-1e408fe58a2d"),
+                            Id = new Guid("126f8e03-15db-46ae-95a6-bacbd4f92760"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 2, 11, 13, 0, 47, 272, DateTimeKind.Utc).AddTicks(6016),
+                            CreatedDate = new DateTime(2022, 2, 10, 16, 36, 21, 83, DateTimeKind.Utc).AddTicks(9999),
                             Name = "Salt"
                         },
                         new
                         {
-                            Id = new Guid("aae1b145-cb2c-4660-a28b-6af41a3c5d23"),
+                            Id = new Guid("0e529c64-d5ae-4b86-86f5-4ac6981bbcc0"),
                             CreatedBy = "Seed",
-                            CreatedDate = new DateTime(2022, 2, 11, 13, 0, 47, 272, DateTimeKind.Utc).AddTicks(6018),
+                            CreatedDate = new DateTime(2022, 2, 10, 16, 36, 21, 84, DateTimeKind.Utc).AddTicks(1),
                             Name = "Peppar"
                         });
                 });
@@ -258,21 +260,27 @@ namespace RecipeHelper.Persistance.Data.Migrations
 
             modelBuilder.Entity("RecipeHelper.Domain.Entities.RecipeIngredient", b =>
                 {
-                    b.Property<Guid>("RecipeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("IngredientId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("IngredientAmountBase")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid>("IngredientId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("NumberOfPortionsBase")
                         .HasColumnType("int");
 
-                    b.HasKey("RecipeId", "IngredientId");
+                    b.Property<Guid>("RecipeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("IngredientId");
+
+                    b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeIngredient", (string)null);
                 });

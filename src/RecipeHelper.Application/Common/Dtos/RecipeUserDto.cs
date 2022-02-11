@@ -5,6 +5,6 @@
         public Guid Id { get; set; }
         public string Name { get; set; }
 
-        //public List<RecipeDto> FavoriteRecipes { get; set; }
+        public List<RecipeDto> Recipes { get; set; }
     }
 }

@@ -17,6 +17,10 @@ namespace RecipeHelper.Application.Common.Profiles
             CreateMap<CreateRecipeIngredientDto, RecipeIngredient>()
                 .ForMember(x => x.NumberOfPortionsBase, opt => opt.MapFrom(src => src.Portions))
                 .ForMember(x => x.IngredientAmountBase, opt => opt.MapFrom(src => src.Amount));
+
+            CreateMap<UpdateRecipeIngredientDto, RecipeIngredient>()
+                .ForMember(x => x.NumberOfPortionsBase, opt => opt.MapFrom(src => src.Portions))
+                .ForMember(x => x.IngredientAmountBase, opt => opt.MapFrom(src => src.Amount));
         }
     }
 }

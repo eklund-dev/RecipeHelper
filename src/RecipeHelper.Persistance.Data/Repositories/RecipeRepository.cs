@@ -2,6 +2,7 @@
 using RecipeHelper.Application.Common.Contracts.Interfaces.Persistance;
 using RecipeHelper.Domain.Entities;
 using RecipeHelper.Persistance.Data.Context;
+using RecipeHelper.Persistance.Data.Extensions;
 using RecipeHelper.Persistance.Data.Repositories.Base;
 
 namespace RecipeHelper.Persistance.Data.Repositories
@@ -9,6 +10,14 @@ namespace RecipeHelper.Persistance.Data.Repositories
     public class RecipeRepository : BaseRepository<Recipe, Guid>, IRecipeRepository
     {
         public RecipeRepository(RecipeHelperDbContext dbContext) : base(dbContext) { }
+
+        public async Task<IEnumerable<Recipe>> GetFavoriteRecipesForUser(Guid recipeUserId)
+        {
+            return await _dbContext.FavoriteRecipes
+                .Where(x => x.RecipeUserId.Equals(recipeUserId))
+                .Select(x => x.Recipe)
+                .ToListAsync();
+        }
 
         public Task<bool> IsRecipeNameUnique(string name, CancellationToken token)
         {
@@ -24,91 +33,72 @@ namespace RecipeHelper.Persistance.Data.Repositories
                 .ToListAsync();
         }
 
-        public override async Task UpdateAync(Recipe entity)
+        public override async Task UpdateAync(Recipe parentRecipe)
         {
-            var existingRecipe = _dbContext.Recipes?
-                .Where(r => r.Id == entity.Id)
+            var originalRecipe = await _dbContext.Recipes
+                .Where(r => r.Id == parentRecipe.Id)
                 .Include(r => r.RecipeCategories)
                 .Include(r => r.RecipeIngredients)
-                .FirstOrDefault();
+                .SingleOrDefaultAsync();
 
-            if (existingRecipe != null)
+            _dbContext.Entry(originalRecipe).CurrentValues.SetValues(parentRecipe);
+
+            foreach (var childRc in parentRecipe.RecipeCategories)
             {
-                _dbContext.Entry(existingRecipe).CurrentValues.SetValues(entity);
+                var originalRc = originalRecipe.RecipeCategories
+                    .Where(rc => rc.RecipeId == childRc.RecipeId && rc.CategoryId == childRc.CategoryId)
+                    .SingleOrDefault();
 
-                if (entity.RecipeCategories != null)
+                // Its original child item with mathing id's
+                if (originalRc != null)
                 {
-                    // Delete children
-                    if (existingRecipe.RecipeCategories != null)
-                    {
-                        foreach (var rc in existingRecipe.RecipeCategories.ToList())
-                        {
-                            if (!entity.RecipeCategories.Any(x => x.RecipeId == rc.RecipeId))
-                                _dbContext?.RecipeCategories.Remove(rc);
-                        }
-                    }
-                  
-                    // Update and insert children
-                    foreach (var updatedCategory in entity.RecipeCategories)
-                    {
-                        var existingCategory = await _dbContext.RecipeCategories
-                            .AsNoTracking()
-                            .Where(x => x.CategoryId == updatedCategory.CategoryId)
-                            .SingleOrDefaultAsync();
-
-                        if (existingCategory != null)
-                            _dbContext.Entry(existingCategory).CurrentValues.SetValues(updatedCategory);
-                        else
-                        {
-                            existingRecipe.RecipeCategories?.Add(updatedCategory);
-                        }
-                    }
+                    var childEntry = _dbContext.Entry(originalRc);
+                    childEntry.CurrentValues.SetValues(childRc);
                 }
-
-                if (entity.RecipeIngredients != null)
+                else
                 {
-                    if (existingRecipe.RecipeIngredients != null)
-                    {
-                        foreach (var item in existingRecipe.RecipeIngredients)
-                        {
-                            if (!entity.RecipeIngredients.Any(x => x.IngredientId == item.IngredientId))
-                                _dbContext.RecipeIngredients.Remove(item);
-                        }
-                    }
-
-                    //var existingIngredients = await _dbContext.RecipeIngredients.Where(x => x.RecipeId == entity.Id).ToListAsync();
-
-                    foreach (var updatedIngredient in entity.RecipeIngredients)
-                    {
-                        var existingIngredient = await _dbContext.RecipeIngredients
-                            .AsNoTracking()
-                            .Where(x => x.RecipeId == existingRecipe.Id && x.IngredientId == updatedIngredient.Id)
-                            .SingleOrDefaultAsync();
-
-                        if (existingIngredient != null)
-                        {
-                            _dbContext.Entry(existingIngredient).CurrentValues.SetValues(updatedIngredient);
-                        }
-                        else
-                        {
-                            var newRi = new RecipeIngredient
-                            {
-                                Id = Guid.NewGuid(),
-                                RecipeId = existingRecipe.Id,
-                                IngredientId = updatedIngredient.Id,
-                                NumberOfPortionsBase = updatedIngredient.NumberOfPortionsBase,
-                                IngredientAmountBase = updatedIngredient.IngredientAmountBase,
-                            };
-
-                            existingRecipe.RecipeIngredients?.Add(newRi);
-                        }
-                    }
+                    // No => its a new child items
+                    originalRecipe.RecipeCategories.Add(childRc);
                 }
-
-                await _dbContext.SaveChangesAsync();
-
             }
-        }
+            // Iterate through list and delete
+            foreach (var originalRc in originalRecipe.RecipeCategories.ToList())
+            {
+                // Does childitems in original collection exists that are not in the new list? - Delete them
+                if (!parentRecipe.RecipeCategories.Any(r => r.RecipeId == originalRecipe.Id))
+                    //Yes this one is
+                    _dbContext.RecipeCategories.Remove(originalRc);
+            }
 
+            // Recipe ingredients(child 2)
+
+            foreach (var childRi in parentRecipe.RecipeIngredients)
+            {
+                var originalRi = originalRecipe.RecipeIngredients
+                    .Where(ri => ri.RecipeId == childRi.RecipeId && ri.IngredientId == childRi.IngredientId)
+                    .SingleOrDefault();
+
+                if (originalRi != null)
+                {
+                    var childEntry = _dbContext.Entry(originalRi);
+                    childEntry.CurrentValues.SetValues(childRi);
+                }
+                else
+                {
+                    originalRecipe.RecipeIngredients.Add(childRi);
+                }
+            }
+
+            foreach (var originalRi in originalRecipe.RecipeIngredients.ToList())
+            {
+                // Does childitems in original collection exists that are not in the new list? - Delete them
+                if (!parentRecipe.RecipeIngredients.Any(r => r.RecipeId == originalRecipe.Id))
+                    // Yes this one is
+                    _dbContext.RecipeIngredients.Remove(originalRi);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+        }
     }
 }

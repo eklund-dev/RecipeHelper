@@ -2,7 +2,6 @@
 using RecipeHelper.Application.Common.Dtos;
 using RecipeHelper.Application.Features.Recipes.Requests;
 using RecipeHelper.Domain.Entities;
-using RecipeHelper.Domain.Enum;
 
 namespace RecipeHelper.Application.Common.Profiles
 {
@@ -15,14 +14,9 @@ namespace RecipeHelper.Application.Common.Profiles
                 .ForMember(x => x.Ingredients, opt => opt.MapFrom(src => src.RecipeIngredients));
 
             CreateMap<UpdateRecipeRequest, Recipe>();
-                //.ForMember(dest => dest.Difficulty, opt => opt.MapFrom(src => Enum.GetName(typeof(Difficulty), src.Difficulty)))
-                //.ForMember(dest => dest.TypeOfMeal, opt => opt.MapFrom(src => Enum.GetName(typeof(TypeOfMeal), src.TypeOfMeal)))
-                //.ForMember(dest => dest.TypeOfOccasion, opt => opt.MapFrom(src => Enum.GetName(typeof(TypeOfOccasion), src.TypeOfOccasion)));
 
             CreateMap<CreateRecipeRequest, Recipe>();
-        //        .ForMember(dest => dest.Difficulty, opt => opt.MapFrom(src => Enum.GetName(typeof(Difficulty), src.Difficulty)))
-        //        .ForMember(dest => dest.TypeOfMeal, opt => opt.MapFrom(src => Enum.GetName(typeof(TypeOfMeal), src.TypeOfMeal)))
-        //        .ForMember(dest => dest.TypeOfOccasion, opt => opt.MapFrom(src => Enum.GetName(typeof(TypeOfOccasion), src.TypeOfOccasion)));
+
         }
     }
 }

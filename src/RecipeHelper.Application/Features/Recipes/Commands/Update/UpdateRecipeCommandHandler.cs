@@ -50,6 +50,7 @@ namespace RecipeHelper.Application.Features.Recipes.Commands.Update
 
             try
             {
+                // TODO: snygga till denna klass - bryt ut allt som går att bryta ut.
                 var recipeCategories = new List<RecipeCategory>();
 
                 foreach (var category in request.Recipe.Categories)
@@ -57,14 +58,31 @@ namespace RecipeHelper.Application.Features.Recipes.Commands.Update
                     recipeCategories.Add(new RecipeCategory { RecipeId = recipe.Id, CategoryId = category.Id });
                 }
 
+                var recipeIngredients = new List<RecipeIngredient>();
+
+                foreach (var ri in request.Recipe.RecipeIngredients)
+                {
+                    recipeIngredients.Add(new RecipeIngredient 
+                    { 
+                        RecipeId = request.Recipe.Id,
+                        IngredientId = ri.IngredientId,
+                        IngredientAmountBase = ri.Amount,
+                        NumberOfPortionsBase = ri.Portions
+                    });
+                }
+
                 var userName = _userService.GetClaimsUserName();
 
                 var recipeToUpdate = _mapper.Map<Recipe>(request.Recipe);
+
                 recipeToUpdate.RecipeCategories = recipeCategories;
+                recipeToUpdate.RecipeIngredients = recipeIngredients;
+
                 recipeToUpdate.CreatedDate = recipe.CreatedDate;
                 recipeToUpdate.CreatedBy = recipe.CreatedBy;
                 recipeToUpdate.LastModifiedDate = DateTime.UtcNow;
                 recipeToUpdate.LastmodifiedBy = userName;
+
                 await _repository.UpdateAync(recipeToUpdate);
 
                 var recipeDto = _repository.Entity.ProjectTo<RecipeDto>(_mapper.ConfigurationProvider).FirstOrDefault();
@@ -81,7 +99,7 @@ namespace RecipeHelper.Application.Features.Recipes.Commands.Update
             catch (Exception ex)
             {
                 _logger.LogError($"Exception in {nameof(UpdateRecipeCommandHandler)}", ex.Message);
-                throw new ApiException("Updating Recipe failed", ex.Message);
+                throw new ApiException("Updating Recipe failed", ex.InnerException.Message);
             }
         }
     }

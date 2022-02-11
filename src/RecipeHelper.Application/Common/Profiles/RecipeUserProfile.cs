@@ -8,9 +8,8 @@ namespace RecipeHelper.Application.Common.Profiles
     {
         public RecipeUserProfile()
         {
-            CreateMap<RecipeUser, RecipeUserDto>();
-
-            CreateMap<FavoriteRecipe, RecipeDto>().ReverseMap();
+            CreateMap<RecipeUser, RecipeUserDto>()
+                .ForMember(x => x.Recipes, opt => opt.MapFrom(src => src.FavoriteRecipes.Select(y => y.Recipe)));
         }
     }
 }

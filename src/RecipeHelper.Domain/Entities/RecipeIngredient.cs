@@ -4,7 +4,6 @@ namespace RecipeHelper.Domain.Entities
 {
     public class RecipeIngredient
     {
-        public Guid Id { get; set; }
         public Guid RecipeId { get; set; }
         public virtual Recipe Recipe { get; set; }
         public Guid IngredientId { get; set; }

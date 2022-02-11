@@ -5,6 +5,7 @@ using RecipeHelper.Application.Common.Contracts.Interfaces;
 using RecipeHelper.Application.Common.Contracts.Interfaces.Persistance;
 using RecipeHelper.Application.Common.Dtos;
 using RecipeHelper.Application.Common.Responses;
+using RecipeHelper.Common.Helpers;
 using RecipeHelper.Domain.Entities;
 
 namespace RecipeHelper.Application.Features.RecipeUsers.Commands.Create
@@ -36,10 +37,11 @@ namespace RecipeHelper.Application.Features.RecipeUsers.Commands.Create
                 return Response<RecipeUserDto>.Fail($"Either userId: '{userId}' is empty or it could not be parsed to type 'Guid'");
             }
 
+            // TODO: Addera möjligheten att lägga in FavoriteRecipes direkt i creation mode.
             var recipeUser = new RecipeUser
             {
                 Id = Guid.NewGuid(),
-                Name = request.Name,
+                Name = request.Name.ToTitleCase(),
                 ApplicationUserId = parsedUserId,
                 CreatedBy = userName,
                 CreatedDate = DateTime.UtcNow,

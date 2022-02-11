@@ -10,10 +10,10 @@ namespace RecipeHelper.Persistance.Data.Configurations
         {
             builder.ToTable("RecipeIngredient");
 
-            builder.HasKey(x => x.Id);
+            builder.HasKey(rc => new { rc.RecipeId, rc.IngredientId });
 
-            builder.HasOne(x => x.Recipe)
-                .WithMany(x => x.RecipeIngredients);
+            builder.Property(x => x.IngredientAmountBase).IsRequired();
+            builder.Property(x => x.NumberOfPortionsBase).IsRequired();
         }
     }
 

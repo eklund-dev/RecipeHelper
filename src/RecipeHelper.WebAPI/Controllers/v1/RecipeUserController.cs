@@ -6,6 +6,7 @@ using RecipeHelper.Application.Common.Dtos;
 using RecipeHelper.Application.Common.QueryParameters;
 using RecipeHelper.Application.Common.Responses;
 using RecipeHelper.Application.Features.RecipeUsers.Commands.Create;
+using RecipeHelper.Application.Features.RecipeUsers.Commands.Delete;
 using RecipeHelper.Application.Features.RecipeUsers.Queries.GetRecipeUserDetails;
 using RecipeHelper.Application.Features.RecipeUsers.Queries.GetRecipeUserList;
 using RecipeHelper.WebAPI.Routes.v1;
@@ -39,7 +40,6 @@ namespace RecipeHelper.WebAPI.Controllers.v1
 
         [HttpGet(ApiRoutes.RecipeUser.GetAll)]
         [ProducesResponseType(typeof(Response<PaginatedList<RecipeUserDto>>), StatusCodes.Status200OK)]
-
         public async Task<IActionResult> GetRecipeUserListAsync([FromRoute] QueryParameters parameters)
         {
             var response = await _mediator.Send(new GetRecipeUserListQuery { QueryParameters = parameters });
@@ -59,5 +59,29 @@ namespace RecipeHelper.WebAPI.Controllers.v1
                 ? Ok(response) 
                 : BadRequest(response);
         }
+
+        [HttpPut(ApiRoutes.RecipeUser.Update)]
+        [ProducesResponseType(typeof(Response<RecipeUserDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateRecipeUserAsync([FromBody] UpdateRecipeUserCommand cmd)
+        {
+            var response = await _mediator.Send(cmd);
+
+            return response.Succeeded
+                ? Ok(response)
+                : BadRequest(response);
+        }
+
+
+        [HttpDelete(ApiRoutes.RecipeUser.Delete)]
+        [ProducesResponseType(typeof(Response<RecipeUserDto>), StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> DeleteRecipeUserAsync([FromRoute] Guid id)
+        {
+            var response = await _mediator.Send(new DeleteRecipeUserCommand { Id = id });
+
+            return response.Succeeded
+                ? Ok(response)
+                : BadRequest(response);
+        }
+
     }
 }
