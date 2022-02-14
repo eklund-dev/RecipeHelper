@@ -5,9 +5,9 @@ using RecipeHelper.Application.Common.Contracts.Interfaces.Identity;
 using RecipeHelper.Application.Common.Contracts.Interfaces.Identity.Roles;
 using RecipeHelper.Application.Common.Dtos.Identity;
 using RecipeHelper.Application.Common.QueryParameters;
-using RecipeHelper.Application.Common.Requests.Roles;
-using RecipeHelper.Application.Common.Requests.Users;
 using RecipeHelper.Application.Common.Responses;
+using RecipeHelper.Application.Features.Identity.Requests.Roles;
+using RecipeHelper.Application.Features.Identity.Requests.Users;
 using RecipeHelper.WebAPI.Helpers;
 using RecipeHelper.WebAPI.Routes.v1;
 

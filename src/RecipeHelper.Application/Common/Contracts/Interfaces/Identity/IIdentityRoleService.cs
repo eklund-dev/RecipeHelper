@@ -1,6 +1,6 @@
 ﻿using RecipeHelper.Application.Common.Dtos.Identity;
-using RecipeHelper.Application.Common.Requests.Roles;
 using RecipeHelper.Application.Common.Responses;
+using RecipeHelper.Application.Features.Identity.Requests.Roles;
 
 namespace RecipeHelper.Application.Common.Contracts.Interfaces.Identity.Roles
 {

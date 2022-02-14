@@ -1,4 +1,4 @@
-﻿namespace RecipeHelper.Application.Common.Requests.Auth
+﻿namespace RecipeHelper.Application.Features.Identity.Requests.Auth
 {
     public class AuthRequest
     {

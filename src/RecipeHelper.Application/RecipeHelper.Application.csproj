@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Identity\" />
     <Folder Include="Features\RecipeUsers\Requests\" />
   </ItemGroup>
 

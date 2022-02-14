@@ -36,11 +36,11 @@ namespace RecipeHelper.Application.Features.Recipes.Commands.Delete
                 await _repoository.DeleteAsync(recipe);
                 _logger.LogInformation($"Recipe with id {request.Id} successfully deleted by {userName}");
                 return Response<RecipeDto>.Success($"Recipe with id {request.Id} successfully deleted");
+
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception appeared in {nameof(DeleteRecipeCommandHandler)} - caused by: {userName}", ex.Message);
-
                 throw new ApiException($"Error caught in {nameof(DeleteRecipeCommandHandler)}", ex.Message);
             }
         }

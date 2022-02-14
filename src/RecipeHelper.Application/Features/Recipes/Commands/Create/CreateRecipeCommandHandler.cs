@@ -75,7 +75,7 @@ namespace RecipeHelper.Application.Features.Recipes.Commands.Create
             catch (Exception ex)
             {
                 _logger.LogError($"Error occured in {nameof(CreateRecipeCommandHandler)}", ex.Message);
-                throw new ApiException($"Exception occured in {nameof(CreateRecipeCommandHandler)}", ex.InnerException.Message);
+                throw new ApiException($"Exception occured in {nameof(CreateRecipeCommandHandler)}", ex.Message);
             }
            
         }

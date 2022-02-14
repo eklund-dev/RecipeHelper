@@ -1,6 +1,6 @@
 ﻿using RecipeHelper.Application.Common.Dtos.Identity;
-using RecipeHelper.Application.Common.Requests.Auth;
 using RecipeHelper.Application.Common.Responses;
+using RecipeHelper.Application.Features.Identity.Requests.Auth;
 
 namespace RecipeHelper.Application.Common.Contracts.Interfaces.Auth
 {

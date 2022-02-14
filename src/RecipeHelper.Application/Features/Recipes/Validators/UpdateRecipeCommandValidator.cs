@@ -2,16 +2,21 @@
 using RecipeHelper.Application.Common.Contracts.Interfaces.Persistance;
 using RecipeHelper.Application.Common.Validators;
 using RecipeHelper.Application.Features.Recipes.Commands.Create;
-using RecipeHelper.Domain.Enum;
+using RecipeHelper.Application.Features.Recipes.Commands.Update;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RecipeHelper.Application.Features.Recipes.Validators
 {
-    public class CreateRecipeCommandValidator : AbstractValidator<CreateRecipeCommand>
+    public class UpdateRecipeCommandValidator : AbstractValidator<UpdateRecipeCommand>
     {
         private readonly IRecipeRepository _repository;
         private readonly IFoodTypeRepository _foodTypeRepository;
 
-        public CreateRecipeCommandValidator(IRecipeRepository repository, IFoodTypeRepository foodTypeRepository)
+        public UpdateRecipeCommandValidator(IRecipeRepository repository, IFoodTypeRepository foodTypeRepository)
         {
             _repository = repository;
             _foodTypeRepository = foodTypeRepository;
@@ -21,7 +26,8 @@ namespace RecipeHelper.Application.Features.Recipes.Validators
                 .NotNull().WithMessage("{PropertyName} cant no be null")
                 .NotStartWithWhiteSpace()
                 .NotEndWithWhiteSpace()
-                .MaximumLength(50).WithMessage("Max 25 characeters");
+                .MaximumLength(50).WithMessage("Max 50 characeters")
+                .MustAsync(RecipeNameUnique).WithMessage("'{PropertyValue}' must be unique");
 
             RuleFor(x => x.Recipe.Description)
                 .NotEmpty().WithMessage("Can not be empty")
@@ -38,20 +44,9 @@ namespace RecipeHelper.Application.Features.Recipes.Validators
 
             RuleFor(x => x.Recipe.FoodTypeId)
                 .NotEmpty().WithMessage("Can not be empty")
-                .NotNull().WithMessage("Can not be null");
-
-            RuleFor(e => e.Recipe.FoodTypeId)
-                .MustAsync(FoodTypeMustExist).WithMessage(x => $"{x.Recipe.FoodTypeId} does not exist");
-
-            RuleFor(x => x.Recipe.Difficulty).IsEnumName(typeof(Difficulty), caseSensitive: false);
-            RuleFor(x => x.Recipe.TypeOfOccasion).IsEnumName(typeof(TypeOfOccasion), caseSensitive: false);
-            RuleFor(x => x.Recipe.TypeOfMeal).IsEnumName(typeof(TypeOfMeal), caseSensitive: false);
-
-            RuleFor(e => e.Recipe.Name)
-                .MustAsync(RecipeNameUnique).WithMessage("'{PropertyValue}' already exists - try another one");
-
+                .NotNull().WithMessage("Can not be null")
+                .MustAsync(FoodTypeMustExist).WithMessage("'{PropertyValue}' does not exist");
         }
-
         private async Task<bool> RecipeNameUnique(string recipeName, CancellationToken token)
         {
             return !await _repository.IsRecipeNameUnique(recipeName, token);
@@ -61,6 +56,5 @@ namespace RecipeHelper.Application.Features.Recipes.Validators
         {
             return await _foodTypeRepository.FoodTypeExistsAsync(foodTypeId);
         }
-
     }
 }

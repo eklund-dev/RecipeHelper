@@ -99,7 +99,7 @@ namespace RecipeHelper.Application.Features.Recipes.Commands.Update
             catch (Exception ex)
             {
                 _logger.LogError($"Exception in {nameof(UpdateRecipeCommandHandler)}", ex.Message);
-                throw new ApiException("Updating Recipe failed", ex.InnerException.Message);
+                throw new ApiException("Updating Recipe failed", ex.Message);
             }
         }
     }

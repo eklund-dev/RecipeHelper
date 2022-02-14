@@ -1,4 +1,4 @@
-﻿namespace RecipeHelper.Application.Common.Responses.Identity
+﻿namespace RecipeHelper.Application.Features.Identity.Responses
 {
     public class ApplicationUserResponse
     {

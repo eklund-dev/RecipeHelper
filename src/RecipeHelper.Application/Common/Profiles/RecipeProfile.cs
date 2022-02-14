@@ -10,8 +10,8 @@ namespace RecipeHelper.Application.Common.Profiles
         public RecipeProfile()
         {
             CreateMap<Recipe, RecipeDto>()
-                .ForMember(x => x.Categories, opt => opt.MapFrom(src => src.RecipeCategories.Select(y => y.Category)))
-                .ForMember(x => x.Ingredients, opt => opt.MapFrom(src => src.RecipeIngredients));
+                .ForMember(x => x.Categories, opt => opt.MapFrom(src => src.RecipeCategories != null ? src.RecipeCategories.Select(y => y.Category) : null))
+                .ForMember(x => x.Ingredients, opt => opt.MapFrom(src => src.RecipeIngredients != null ? src.RecipeIngredients.Select(y => y.Ingredient) : null));
 
             CreateMap<UpdateRecipeRequest, Recipe>();
 

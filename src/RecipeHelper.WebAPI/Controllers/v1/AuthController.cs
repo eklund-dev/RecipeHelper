@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using RecipeHelper.Application.Common.Contracts.Interfaces.Auth;
 using RecipeHelper.Application.Common.Dtos.Identity;
-using RecipeHelper.Application.Common.Requests.Auth;
 using RecipeHelper.Application.Common.Responses;
+using RecipeHelper.Application.Features.Identity.Requests.Auth;
 using RecipeHelper.WebAPI.Routes.v1;
 
 namespace RecipeHelper.WebAPI.Controllers.v1

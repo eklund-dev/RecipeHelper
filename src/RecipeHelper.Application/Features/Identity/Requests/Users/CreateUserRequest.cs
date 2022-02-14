@@ -1,4 +1,4 @@
-﻿namespace RecipeHelper.Application.Common.Requests.Users
+﻿namespace RecipeHelper.Application.Features.Identity.Requests.Users
 {
     public class CreateUserRequest
     {

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using RecipeHelper.Application.Common.Dtos.Identity;
-using RecipeHelper.Application.Common.Requests.Roles;
-using RecipeHelper.Application.Common.Requests.Users;
+using RecipeHelper.Application.Features.Identity.Requests.Roles;
+using RecipeHelper.Application.Features.Identity.Requests.Users;
 using RecipeHelper.Persistance.Identity.Dtos;
 using RecipeHelper.Persistance.Identity.Models;
 

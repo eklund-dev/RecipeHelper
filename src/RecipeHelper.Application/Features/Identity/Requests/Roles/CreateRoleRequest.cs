@@ -1,4 +1,4 @@
-﻿namespace RecipeHelper.Application.Common.Requests.Roles
+﻿namespace RecipeHelper.Application.Features.Identity.Requests.Roles
 {
     public class CreateRoleRequest
     {
